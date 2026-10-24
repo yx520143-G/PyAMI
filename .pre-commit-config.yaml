@@ -12,6 +12,7 @@ repos:
     rev: v5.0.0
     hooks:
       - id: trailing-whitespace
+        exclude: ^docs/issue27-response-rng-20261024/runs/01-seed-red/stderr\.txt$
       - id: end-of-file-fixer
       - id: check-added-large-files
       - id: check-ast

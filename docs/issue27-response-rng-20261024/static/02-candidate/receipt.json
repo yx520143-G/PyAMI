@@ -1,0 +1,17 @@
+{
+  "command": [
+    "C:\\Users\\yx\\.codex\\worktrees\\pybert-issue4-resources\\serial-bus-simulator\\.venv\\Scripts\\python.exe",
+    "-B",
+    "-m",
+    "mypy",
+    "src/pyibisami/ami/model.py",
+    "--follow-imports=skip",
+    "--cache-dir",
+    "nul"
+  ],
+  "exit_code": 1,
+  "elapsed_s": 4.559652099997038,
+  "scope": "static model.py only; no production method execution",
+  "source_sha256": "0e5a18c6d3402f10e2fb85af147f6ee961e5c67ae21fec555b1842f51a870442",
+  "shadow_sha256": null
+}

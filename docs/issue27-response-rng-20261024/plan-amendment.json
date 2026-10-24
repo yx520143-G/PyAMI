@@ -1,0 +1,13 @@
+{
+  "reason": "01 was harness startup blocked before pytest: actual _InitData TypedDict class body was mistakenly classified as a forbidden method. Original snapshots/receipt/trace retained; not a feature red.",
+  "guard_correction": "allow exactly existing _InitData class body from source; real model constructors/methods/loaders still forbidden",
+  "runner_sha256": "3bec5800de9cba847ab1e72b874be34668bd182550d2805437af2aacffe79d8f",
+  "runs": [
+    "02-seed-red",
+    "03-seed-green",
+    "04-contract-green"
+  ],
+  "source_test_fixtures_environment_unchanged": true,
+  "01_actual_response_key_init_postinit": 4,
+  "01_actual_getresponses_stub_C_model_calls": 0
+}
