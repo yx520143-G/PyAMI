@@ -1,0 +1,729 @@
+{
+  "kind": "Local PyAMI #24 candidate evidence seal; no real-model qualification or dependency migration",
+  "baseline_HEAD": "5270d713e40bac2be5747bef09b92df79df9085b",
+  "baseline_tree": "35b09659b5be907204823a82f95afdc9ec63d0a8",
+  "reviewed_candidate_HEAD": "2b475fa5a40455cbf391cbaf62ae25e77dcb0452",
+  "reviewed_candidate_tree": "eed28092a8c4e7bc69ad32aa42478697d37485e6",
+  "branch": "codex/pyami-clock-lifecycle",
+  "worktree": "E:\\serial-bus-simulator-dependencies\\pyami-clock-lifecycle",
+  "only_modified_existing_file": [
+    "src/pyibisami/ami/model.py"
+  ],
+  "allowed_new_files": [
+    "tests/ami/test_clock_lifecycle.py",
+    "docs/issue24-clock-lifecycle-20261024/**"
+  ],
+  "files_before_this_seal": {
+    "docs/issue24-clock-lifecycle-20261024/.gitattributes": {
+      "sha256": "99de1623cead29e42faa98b3f1887eb64ea746d3fa1b3251843020350ef28392",
+      "bytes": 28,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/README.md": {
+      "sha256": "a98328fb11115d73c0ef8f6ffc946c49785bed9d6c334083af097e8b8a99489e",
+      "bytes": 10598,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/cost-ledger.json": {
+      "sha256": "6cd0aeb47c5cf785b2a93066967eefd611949edad6fa4f91230d778fcf8acbf7",
+      "bytes": 6957,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/issue-24.json": {
+      "sha256": "e3d2c53d77871faff662e71574b5d991714211e5af83fdfa6ce85ecb95dd6920",
+      "bytes": 5821,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/mypy-baseline.json": {
+      "sha256": "76aa86851b96c633350ed88924f09711e9e2e0ea26c58079ad9ec3dc56141bd1",
+      "bytes": 674,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/mypy-baseline.txt": {
+      "sha256": "a4f109f40b99f31d64fb15a2102a588cb99f4312a8e7a867e452d2c0ec324ead",
+      "bytes": 473,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/mypy-candidate-fixed.json": {
+      "sha256": "0b8c9aeb853e30633a65a3ff4cabe010ae2466b18b02daa009dad1c53b85e501",
+      "bytes": 476,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/mypy-candidate-fixed.txt": {
+      "sha256": "0a8ad6b880554b28929ed2adb5af688e0728f928c6f63c457c40d8d51cea9e64",
+      "bytes": 473,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/mypy-candidate.json": {
+      "sha256": "41b9eda19f0db87bb11a57e03907419b01f6314df95f6e05db7f07a5a798fd6d",
+      "bytes": 125,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/mypy-candidate.txt": {
+      "sha256": "3c0865b66f5bfd37053f04f15f519e7536fe7d3ecdc9e979c5b1856872a02ba6",
+      "bytes": 968,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/review.md": {
+      "sha256": "08e4783dc5cb3c0b403ddac1cd2ce9c9b69aa1733524783eec04311409c5eec5",
+      "bytes": 2181,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/run_guarded.py": {
+      "sha256": "214881a910d3d0bbe7ba8d9a2a6036ecd263fd10413a5272dbb5ac6b2b935a73",
+      "bytes": 5861,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/01-prefix-red/bootstrap-stderr.txt": {
+      "sha256": "2d72011fb55948db4efe554ad0fb848f6867e3b5041d6a5a510bd9e1fe586d23",
+      "bytes": 6641,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/01-prefix-red/bootstrap.json": {
+      "sha256": "d0bf198376f2bb2587783ce46b096ea67d7e936073fc094745753e0426f805c7",
+      "bytes": 507,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/01-prefix-red/model.py.txt": {
+      "sha256": "6dd6ae1f9381c596bb25606199a6fe404c24aa1ffbcefc4d5ffb5e4df22b6be3",
+      "bytes": 29904,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/01-prefix-red/runner.py.txt": {
+      "sha256": "35bb86b5f22b94b5befe569ae78ad085e88a41512ba3d395448603117282b493",
+      "bytes": 5553,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/01-prefix-red/test.py.txt": {
+      "sha256": "4745f61ee3c8cfaebd79668f4e29728962e9a79516da5d3a5ac89c0ebb7cf1e3",
+      "bytes": 3098,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/02-prefix-red/model.py.txt": {
+      "sha256": "6dd6ae1f9381c596bb25606199a6fe404c24aa1ffbcefc4d5ffb5e4df22b6be3",
+      "bytes": 29904,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/02-prefix-red/receipt.json": {
+      "sha256": "f7872864d830ff1dba49d6edd027172a220ef88d3f0412ebf95bc7cf36a0e811",
+      "bytes": 2248,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/02-prefix-red/runner.py.txt": {
+      "sha256": "ed21150db7856ae56a28b34a7ef835bfcb786b2fd372944cead79b176dd979aa",
+      "bytes": 5873,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/02-prefix-red/stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/02-prefix-red/stdout.txt": {
+      "sha256": "7b1746cf37b3f14ecc6c670d9f18098ca8367270f8a1c162a3a54b094a5bbef2",
+      "bytes": 1840,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/02-prefix-red/test.py.txt": {
+      "sha256": "4745f61ee3c8cfaebd79668f4e29728962e9a79516da5d3a5ac89c0ebb7cf1e3",
+      "bytes": 3098,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/03-prefix-green/model.py.txt": {
+      "sha256": "a9d96174e5d5a0f23a3e14e558b6d96693324a6f8ad99ce7e0ba1a881b62d7dd",
+      "bytes": 30621,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/03-prefix-green/receipt.json": {
+      "sha256": "cc5c5edb387edb3bc38eb6c0bdba441faaa4c7a8b0e5696e51b353d0a9b7cd2a",
+      "bytes": 2301,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/03-prefix-green/runner.py.txt": {
+      "sha256": "ed21150db7856ae56a28b34a7ef835bfcb786b2fd372944cead79b176dd979aa",
+      "bytes": 5873,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/03-prefix-green/stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/03-prefix-green/stdout.txt": {
+      "sha256": "926786d1d203f2d3184aacd514edd8033c5f1036b35504feaa6343e45739d58c",
+      "bytes": 560,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/03-prefix-green/test.py.txt": {
+      "sha256": "4745f61ee3c8cfaebd79668f4e29728962e9a79516da5d3a5ac89c0ebb7cf1e3",
+      "bytes": 3098,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/04-epoch-failure-red/model.py.txt": {
+      "sha256": "a9d96174e5d5a0f23a3e14e558b6d96693324a6f8ad99ce7e0ba1a881b62d7dd",
+      "bytes": 30621,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/04-epoch-failure-red/receipt.json": {
+      "sha256": "e68e9b65ac02f5feb29cd054e6ddbd6044d15431f49ae6c9e5dde5bac88844ae",
+      "bytes": 3900,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/04-epoch-failure-red/runner.py.txt": {
+      "sha256": "ed21150db7856ae56a28b34a7ef835bfcb786b2fd372944cead79b176dd979aa",
+      "bytes": 5873,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/04-epoch-failure-red/stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/04-epoch-failure-red/stdout.txt": {
+      "sha256": "190c5156995fbca9c0f2f0c6ba9ad58e066915370fd34c2455dcf9b3b477acef",
+      "bytes": 27681,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/04-epoch-failure-red/test.py.txt": {
+      "sha256": "7cf20b9bc0ce8b79cffb5a9120996fe38c1d7e9eb29cacbd9f556e7fef76fa0d",
+      "bytes": 7120,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/05-epoch-failure-green/model.py.txt": {
+      "sha256": "6681c40e10321748fcb0c308e49675b4f1e64f7a8f1f6d0ad03dcc1b00df4fb7",
+      "bytes": 32721,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/05-epoch-failure-green/receipt.json": {
+      "sha256": "dcd15818b6e5c8fa7f210e0cb8fff4bd1ea803d225b628dee367931fa95dfe22",
+      "bytes": 4111,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/05-epoch-failure-green/runner.py.txt": {
+      "sha256": "ed21150db7856ae56a28b34a7ef835bfcb786b2fd372944cead79b176dd979aa",
+      "bytes": 5873,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/05-epoch-failure-green/stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/05-epoch-failure-green/stdout.txt": {
+      "sha256": "4553a525e8abc9ad0ec3a97f2429f504dd6b38471271cbd249dca3bdd9fb541a",
+      "bytes": 2290,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/05-epoch-failure-green/test.py.txt": {
+      "sha256": "7cf20b9bc0ce8b79cffb5a9120996fe38c1d7e9eb29cacbd9f556e7fef76fa0d",
+      "bytes": 7120,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/06-lifecycle-red/model.py.txt": {
+      "sha256": "6681c40e10321748fcb0c308e49675b4f1e64f7a8f1f6d0ad03dcc1b00df4fb7",
+      "bytes": 32721,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/06-lifecycle-red/receipt.json": {
+      "sha256": "73605c999f7913826e5385a767511a036a842325dc95fd9abeba53a7bb019e31",
+      "bytes": 5335,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/06-lifecycle-red/runner.py.txt": {
+      "sha256": "ed21150db7856ae56a28b34a7ef835bfcb786b2fd372944cead79b176dd979aa",
+      "bytes": 5873,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/06-lifecycle-red/stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/06-lifecycle-red/stdout.txt": {
+      "sha256": "a47d611ec04cfbe2d238763700853dfbb0aba8d9947c60af72632aee07c0d034",
+      "bytes": 17992,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/06-lifecycle-red/test.py.txt": {
+      "sha256": "b5c0bddcf9c35346d90b55296f33c40112849b616ea77f92bacaf6cbb69ddf10",
+      "bytes": 12380,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/07-lifecycle-green/model.py.txt": {
+      "sha256": "f19cd01fb138337f72107fcfc1ee1c292661e209263324fb340702cb9a22584c",
+      "bytes": 34646,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/07-lifecycle-green/receipt.json": {
+      "sha256": "f775aa50e8b412712384a7c5c279ad152ac37de42f0959468ec00a244dc4be77",
+      "bytes": 5925,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/07-lifecycle-green/runner.py.txt": {
+      "sha256": "ed21150db7856ae56a28b34a7ef835bfcb786b2fd372944cead79b176dd979aa",
+      "bytes": 5873,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/07-lifecycle-green/stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/07-lifecycle-green/stdout.txt": {
+      "sha256": "f13c8ba2a18b8adde484111f5037f37ca7ab2e230f2e8516d63549a50d2e39a0",
+      "bytes": 4502,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/07-lifecycle-green/test.py.txt": {
+      "sha256": "b5c0bddcf9c35346d90b55296f33c40112849b616ea77f92bacaf6cbb69ddf10",
+      "bytes": 12380,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/08-lifecycle-green/model.py.txt": {
+      "sha256": "f19cd01fb138337f72107fcfc1ee1c292661e209263324fb340702cb9a22584c",
+      "bytes": 34646,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/08-lifecycle-green/receipt.json": {
+      "sha256": "7b610455ee1aa74b8be941b8712825ff41208aff00e5b754637037b4014b127c",
+      "bytes": 5890,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/08-lifecycle-green/runner.py.txt": {
+      "sha256": "ed21150db7856ae56a28b34a7ef835bfcb786b2fd372944cead79b176dd979aa",
+      "bytes": 5873,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/08-lifecycle-green/stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/08-lifecycle-green/stdout.txt": {
+      "sha256": "738d3b4faf0b173ef07489359a89f416289ac9a85520333adff08a80663af4fc",
+      "bytes": 3676,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/08-lifecycle-green/test.py.txt": {
+      "sha256": "f0f628030dd7d7eeb9d96352680580a8530af9542dc5559c079be37db6456a3a",
+      "bytes": 12379,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/09-boundary-green/model.py.txt": {
+      "sha256": "2e8a8dfce989d97efd411b98e8d59e6dcf29d342707c00b2f85d0227410db1f2",
+      "bytes": 34954,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/09-boundary-green/receipt.json": {
+      "sha256": "b26c56fad330debacf9759009feace6b0e89762a69b50a76fd1347d04603f05f",
+      "bytes": 6342,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/09-boundary-green/runner.py.txt": {
+      "sha256": "ed21150db7856ae56a28b34a7ef835bfcb786b2fd372944cead79b176dd979aa",
+      "bytes": 5873,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/09-boundary-green/stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/09-boundary-green/stdout.txt": {
+      "sha256": "10bbe45df477685ad25b049d1159b6b15261ad90afed400a98921f1c53c7422b",
+      "bytes": 4192,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/09-boundary-green/test.py.txt": {
+      "sha256": "4247db4f24cdc7e3d8cba247f879e54dc6c2295cdd9e02857a8ff51e4a73a8b4",
+      "bytes": 14304,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/10-final-green/model.py.txt": {
+      "sha256": "e74b082dbdd34b09282717ac63bbf88e34de65e7166ac909c5959a2d85ab0eab",
+      "bytes": 34968,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/10-final-green/receipt.json": {
+      "sha256": "87bfe8f8995c0db1ec677d425100b153cd041b3c13fdfa4cf2503cb929998406",
+      "bytes": 6330,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/10-final-green/runner.py.txt": {
+      "sha256": "214881a910d3d0bbe7ba8d9a2a6036ecd263fd10413a5272dbb5ac6b2b935a73",
+      "bytes": 5861,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/10-final-green/stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/10-final-green/stdout.txt": {
+      "sha256": "4d4ea9b07d2158f7f658c5138b658ae64f73ff6c1f8da0ddceb66d6e7c5a1da1",
+      "bytes": 4192,
+      "UTF8_without_BOM": true
+    },
+    "docs/issue24-clock-lifecycle-20261024/runs/10-final-green/test.py.txt": {
+      "sha256": "fe281c74181fc812e82a056d4d0caa6b84df529ea15bb10fed68de13c671d681",
+      "bytes": 14316,
+      "UTF8_without_BOM": true
+    },
+    "src/pyibisami/ami/model.py": {
+      "sha256": "e74b082dbdd34b09282717ac63bbf88e34de65e7166ac909c5959a2d85ab0eab",
+      "bytes": 34968,
+      "UTF8_without_BOM": true
+    },
+    "tests/ami/test_clock_lifecycle.py": {
+      "sha256": "fe281c74181fc812e82a056d4d0caa6b84df529ea15bb10fed68de13c671d681",
+      "bytes": 14316,
+      "UTF8_without_BOM": true
+    }
+  },
+  "files_before_this_seal_count": 73,
+  "self_hash_and_final_HEAD_tree_clean": "Reported after local documentation commit in PM handoff; avoids self-reference",
+  "checked_clone": {
+    "normal_git_directory": true,
+    "git_common_dir": ".git",
+    "alternates_absent": true,
+    "object_files_checked": 71,
+    "all_object_link_counts": 1,
+    "active_hooks": [],
+    "core_hooksPath": null,
+    "clone_command": "git clone --no-hardlinks --no-checkout <local read-only source> <new independent path>",
+    "original_ref_config_index_before_after_fingerprints": "Not collected; no mutating command sent to source. Read-only source HEAD/tree/clean/protected file hashes verified."
+  },
+  "external_read_only_repositories": [
+    {
+      "path": "C:\\Users\\yx\\.codex\\worktrees\\pybert-issue10-ami\\serial-bus-simulator\\PyAMI",
+      "HEAD": "5270d713e40bac2be5747bef09b92df79df9085b",
+      "tree": "35b09659b5be907204823a82f95afdc9ec63d0a8",
+      "clean": true,
+      "commands_read_only": true
+    },
+    {
+      "path": "C:\\Users\\yx\\.codex\\worktrees\\pybert-clocks-contract\\serial-bus-simulator",
+      "HEAD": "e0e6424f606ef28ebd217ac8c14098b1962a9ea4",
+      "tree": "4e419f62ddefa125435eb6d0e613015284ffd34a",
+      "clean": true,
+      "commands_read_only": true
+    }
+  ],
+  "protected_design_seal": {
+    "path": "C:\\Users\\yx\\.codex\\worktrees\\pybert-clocks-contract\\serial-bus-simulator\\docs\\webui\\issue10\\clocks-contract-20261024\\verification-v2.json",
+    "sha256": "824a9b24043e9f781147cfe75afcddb6ef248b4c54df4100491dd2513bab694f",
+    "sealed_files_match_final_Git_blobs": [
+      "docs/webui/issue10/clocks-contract-20261024/.gitattributes",
+      "docs/webui/issue10/clocks-contract-20261024/contract_stubs-v1.py",
+      "docs/webui/issue10/clocks-contract-20261024/contract_stubs.py",
+      "docs/webui/issue10/clocks-contract-20261024/downstream-source-check.json",
+      "docs/webui/issue10/clocks-contract-20261024/inspect_downstream.py",
+      "docs/webui/issue10/clocks-contract-20261024/README.md",
+      "docs/webui/issue10/clocks-contract-20261024/review.md",
+      "docs/webui/issue10/clocks-contract-20261024/sample-index-results.json",
+      "docs/webui/issue10/clocks-contract-20261024/sample_index_stubs.py",
+      "docs/webui/issue10/clocks-contract-20261024/stub-results-v1.json",
+      "docs/webui/issue10/clocks-contract-20261024/stub-results-v2.json",
+      "docs/webui/issue10/clocks-contract-20261024/verification-v2.json",
+      "docs/webui/issue10/clocks-contract-20261024/verification.json",
+      "docs/webui/issue10/clocks-contract-20261024/web-consumer-results-p2.json",
+      "docs/webui/issue10/clocks-contract-20261024/web-consumers-p2.md",
+      "docs/webui/issue10/clocks-contract-20261024/web_consumer_stubs.py"
+    ],
+    "protected_input_count": 20,
+    "protected_inputs_sha256": {
+      "C:\\Users\\yx\\.codex\\worktrees\\pybert-clocks-contract\\serial-bus-simulator\\src\\pybert\\models\\bert.py": "8b8d6255aa34445e559077bc9e3bf17e447f391846bdff6077ce3d1b1495f9a6",
+      "C:\\Users\\yx\\.codex\\worktrees\\pybert-clocks-contract\\serial-bus-simulator\\src\\pybert\\utility\\ibisami.py": "24b0d5d30f13838fd7b65489e1c96f4ea33fdd8743708fecef19fd576d01aecc",
+      "C:\\Users\\yx\\.codex\\worktrees\\pybert-clocks-contract\\serial-bus-simulator\\src\\pybert\\pybert.py": "14ffa4df4f035324a3ab07766ab16291b185c6bd38e73bdea4a1075bf02db1f3",
+      "C:\\Users\\yx\\.codex\\worktrees\\pybert-clocks-contract\\serial-bus-simulator\\src\\pybert\\web\\ami.py": "eeb737efe19e041ff8d4891bb514fc0a7e20d156f1c19565bca33cf2353e05a8",
+      "C:\\Users\\yx\\.codex\\worktrees\\pybert-clocks-contract\\serial-bus-simulator\\src\\pybert\\web\\worker.py": "f34e4734639c0a8d3e169a55b35e11a8dc4019fd6d7d5b93ec272871e58b4bf4",
+      "C:\\Users\\yx\\.codex\\worktrees\\pybert-clocks-contract\\serial-bus-simulator\\src\\pybert\\web\\config.py": "dd12dfcfe48419058c0bd8d4ed68c59979f0918c4c3e97a6f2ec827841e0bb49",
+      "C:\\Users\\yx\\.codex\\worktrees\\pybert-clocks-contract\\serial-bus-simulator\\.gitmodules": "a3c595b156509c95e69d2ccae7e1289b4e5120a17b2699e61b11281d1911cdff",
+      "C:\\Users\\yx\\.codex\\worktrees\\pybert-clocks-contract\\serial-bus-simulator\\pyproject.toml": "01413cacd9686f957349a9533f60670076a3d7022f08c42c43b6a117741ed9f9",
+      "C:\\Users\\yx\\.codex\\worktrees\\pybert-clocks-contract\\serial-bus-simulator\\uv.lock": "cc21cb7dd84c9729a6a2fedfda297af9fb195c0dd7e05a24f89fb7db87be4b12",
+      "C:\\Users\\yx\\.codex\\worktrees\\pybert-clocks-contract\\serial-bus-simulator\\docs\\webui\\issue10\\clocks-gate-audit-20261024\\README.md": "19fdf4d742c86cf76958e2a5a9426b1c4f5a04ee3d064c7cc394761ba744bd70",
+      "C:\\Users\\yx\\.codex\\worktrees\\pybert-clocks-contract\\serial-bus-simulator\\docs\\webui\\issue22\\params-compat-20261024\\README.md": "143450c5ab3c837cbf4aa8fe9df9e2d17d755f4bfa3033fb69981db9ffbb6fed",
+      "C:\\Users\\yx\\.codex\\worktrees\\pybert-issue10-ami\\serial-bus-simulator\\PyAMI\\src\\pyibisami\\ami\\model.py": "6dd6ae1f9381c596bb25606199a6fe404c24aa1ffbcefc4d5ffb5e4df22b6be3",
+      "C:\\Users\\yx\\.codex\\worktrees\\pybert-issue10-ami\\serial-bus-simulator\\PyAMI\\pyproject.toml": "0a8810b7aa87d054d64897a511d660e39c9a3342aabcca43af60786c101cf5be",
+      "C:\\Users\\yx\\.codex\\worktrees\\pybert-clocks-contract\\serial-bus-simulator\\src\\pybert\\models\\dfe.py": "ee2cda2eb17bfaa5661510f858798d14d5202c9a060da994a7e21b9a30473966",
+      "C:\\Users\\yx\\.codex\\worktrees\\pybert-clocks-contract\\serial-bus-simulator\\src\\pybert\\utility\\sigproc.py": "8bfef834d14732de34efa6af3b470ff6371f691ef22d1fc3e77dcf78be205794",
+      "C:\\Users\\yx\\.codex\\worktrees\\pybert-clocks-contract\\serial-bus-simulator\\src\\pybert\\web\\data.py": "34b317a4c512c5cf17f05ec60e66bb567059cbf02dfa34e97dd7406702326e35",
+      "C:\\Users\\yx\\.codex\\worktrees\\pybert-clocks-contract\\serial-bus-simulator\\src\\pybert\\web\\analysis.py": "12806250fc03c8ffbbd77842970640296c53f843d9de56642cc1bcd99639e7d2",
+      "C:\\Users\\yx\\.codex\\worktrees\\pybert-clocks-contract\\serial-bus-simulator\\src\\pybert\\web\\archive.py": "38f2b1967488ef7b6e6cdb768863da525226bf9bf11e71ccd292cccec6e3c676",
+      "C:\\Users\\yx\\.codex\\worktrees\\pybert-clocks-contract\\serial-bus-simulator\\src\\pybert\\web\\viterbi.py": "8c8768f9b4ada62dd370786a8d4f4129118bc14cc1eb9925012abce445d92a3f",
+      "C:\\Users\\yx\\.codex\\worktrees\\pybert-clocks-contract\\serial-bus-simulator\\src\\pybert\\web\\__init__.py": "b1896655d91bfaefd0cedd7ebdef5a97581e00ed934e418d9921fa7e9f10fe3c"
+    },
+    "all_saved_hashes_still_match": true
+  },
+  "unchanged_license_dependency_lock_metadata": {
+    "LICENSE": {
+      "disk_sha256": "23924fa493841dc61364e4462db1dd6ba830e2ebb211e04174e970f59560513c",
+      "baseline_git_blob_sha256": "894b4a84674527cc82ec8a50b948b08ef78151de94c64e2d67af3229f4ad3eb3",
+      "unchanged_ignoring_checkout_EOL": true
+    },
+    "pyproject.toml": {
+      "disk_sha256": "0a8810b7aa87d054d64897a511d660e39c9a3342aabcca43af60786c101cf5be",
+      "baseline_git_blob_sha256": "76393cd7ca6d08f0fa807df126c6b7f7af22e6d3e782afb0611235cfba7db57d",
+      "unchanged_ignoring_checkout_EOL": true
+    },
+    "uv.lock": {
+      "disk_sha256": "8ed75beed57fe224b3ad2b1a24d49c2264b8b342f83d29efb92eac839a7ea578",
+      "baseline_git_blob_sha256": "a24806831fe32699f2f485f61ae6ff5a15e66febb347de21b70ce90673bf4b2f",
+      "unchanged_ignoring_checkout_EOL": true
+    }
+  },
+  "AST": {
+    "python_3_10_parse_only_passed": true,
+    "no_imports_or_product_execution_in_sealing": true,
+    "changed_existing_nodes": [
+      "AMIModel",
+      "AMIModel.__del__",
+      "AMIModel.__init__",
+      "AMIModel.getWave",
+      "AMIModel.initialize"
+    ],
+    "added_nodes": [
+      "AMIModel._initialize",
+      "AMIModel.close",
+      "AMIModel.last_close_call",
+      "AMIModel.last_getwave_calls",
+      "AMIModel.last_init_call",
+      "AMIModelError",
+      "AMIModelError.__init__",
+      "_clock_prefix"
+    ],
+    "removed_nodes": [],
+    "get_responses_unchanged": true,
+    "AMIModelInitializer_unchanged": true
+  },
+  "EOL_note": {
+    "production_disk_sha256": "e74b082dbdd34b09282717ac63bbf88e34de65e7166ac909c5959a2d85ab0eab",
+    "reviewed_git_blob_sha256": "3cc5c1629c163ab1dd2dec6ffc80385cae46cb08e2aeb0b64ac1999d77fd0028",
+    "difference_is_checkout_EOL_only": true,
+    "raw_snapshots_preserve_original_bytes": true
+  },
+  "guarded_runs": [
+    {
+      "run": "02-prefix-red",
+      "receipt_sha256": "f7872864d830ff1dba49d6edd027172a220ef88d3f0412ebf95bc7cf36a0e811",
+      "exit_code": 1,
+      "snapshot_hashes_match": true,
+      "blocked_attempts": {},
+      "real_calls_all_zero": true
+    },
+    {
+      "run": "03-prefix-green",
+      "receipt_sha256": "cc5c5edb387edb3bc38eb6c0bdba441faaa4c7a8b0e5696e51b353d0a9b7cd2a",
+      "exit_code": 0,
+      "snapshot_hashes_match": true,
+      "blocked_attempts": {},
+      "real_calls_all_zero": true
+    },
+    {
+      "run": "04-epoch-failure-red",
+      "receipt_sha256": "e68e9b65ac02f5feb29cd054e6ddbd6044d15431f49ae6c9e5dde5bac88844ae",
+      "exit_code": 1,
+      "snapshot_hashes_match": true,
+      "blocked_attempts": {},
+      "real_calls_all_zero": true
+    },
+    {
+      "run": "05-epoch-failure-green",
+      "receipt_sha256": "dcd15818b6e5c8fa7f210e0cb8fff4bd1ea803d225b628dee367931fa95dfe22",
+      "exit_code": 0,
+      "snapshot_hashes_match": true,
+      "blocked_attempts": {},
+      "real_calls_all_zero": true
+    },
+    {
+      "run": "06-lifecycle-red",
+      "receipt_sha256": "73605c999f7913826e5385a767511a036a842325dc95fd9abeba53a7bb019e31",
+      "exit_code": 1,
+      "snapshot_hashes_match": true,
+      "blocked_attempts": {},
+      "real_calls_all_zero": true
+    },
+    {
+      "run": "07-lifecycle-green",
+      "receipt_sha256": "f775aa50e8b412712384a7c5c279ad152ac37de42f0959468ec00a244dc4be77",
+      "exit_code": 1,
+      "snapshot_hashes_match": true,
+      "blocked_attempts": {},
+      "real_calls_all_zero": true
+    },
+    {
+      "run": "08-lifecycle-green",
+      "receipt_sha256": "7b610455ee1aa74b8be941b8712825ff41208aff00e5b754637037b4014b127c",
+      "exit_code": 0,
+      "snapshot_hashes_match": true,
+      "blocked_attempts": {},
+      "real_calls_all_zero": true
+    },
+    {
+      "run": "09-boundary-green",
+      "receipt_sha256": "b26c56fad330debacf9759009feace6b0e89762a69b50a76fd1347d04603f05f",
+      "exit_code": 0,
+      "snapshot_hashes_match": true,
+      "blocked_attempts": {},
+      "real_calls_all_zero": true
+    },
+    {
+      "run": "10-final-green",
+      "receipt_sha256": "87bfe8f8995c0db1ec677d425100b153cd041b3c13fdfa4cf2503cb929998406",
+      "exit_code": 0,
+      "snapshot_hashes_match": true,
+      "blocked_attempts": {},
+      "real_calls_all_zero": true
+    }
+  ],
+  "final_directed_result": {
+    "run": "10-final-green",
+    "collected": 37,
+    "passed": 37,
+    "pytest_exit_code": 0,
+    "source_test_runner_match_current_disk": true,
+    "receipt_HEAD_is_precommit_baseline": "5270d713e40bac2be5747bef09b92df79df9085b",
+    "receipt_source_and_snapshot_hashes_identify_tested_candidate": true,
+    "production_python_calls": {
+      "AMIModelInitializer.__init__": 47,
+      "AMIModelInitializer._setChannelResponse": 47,
+      "AMIModelInitializer._setRowSize": 47,
+      "AMIModel.initialize": 48,
+      "AMIModel.close": 113,
+      "AMIModel._initialize": 47,
+      "AMIModelInitializer._getRowSize": 84,
+      "AMIModelInitializer._getNumAggressors": 46,
+      "AMIModelInitializer._getSampleInterval": 84,
+      "AMIModelInitializer._getBitTime": 84,
+      "ami_params_string": 45,
+      "ami_params_string.<locals>.<genexpr>": 45,
+      "AMIModel.getWave": 50,
+      "_clock_prefix": 28,
+      "AMIModel._getAmiParamsOut": 15,
+      "AMIModelError.__init__": 51,
+      "AMIModel.last_getwave_calls": 3,
+      "AMIModel.__del__": 43,
+      "AMIModel.last_close_call": 11,
+      "AMIModel.last_init_call": 3,
+      "AMIModel.root_name": 1
+    },
+    "fake_python_callbacks": {
+      "Init": 45,
+      "GetWave": 33,
+      "Close": 22
+    },
+    "real_calls": {
+      "Main": 0,
+      "COM": 0,
+      "coopt": 0,
+      "C_Init": 0,
+      "C_GetWave": 0,
+      "C_Close": 0,
+      "CDLL": 0,
+      "engine": 0,
+      "numerical_helper": 0,
+      "AMI_grammar_parser": 0,
+      "model_download": 0,
+      "model_compile": 0
+    },
+    "guard": "CDLL/loaders/audit, real constructor, parser imports and response/DSP helpers blocked before methods"
+  },
+  "history_and_costs": {
+    "cost_ledger_sha256": "6cd0aeb47c5cf785b2a93066967eefd611949edad6fa4f91230d778fcf8acbf7",
+    "guarded_pytest_runs": 9,
+    "production_python_calls_sum": {
+      "AMIModelInitializer.__init__": 260,
+      "AMIModelInitializer._setChannelResponse": 260,
+      "AMIModelInitializer._setRowSize": 260,
+      "AMIModel.initialize": 265,
+      "AMIModelInitializer._getRowSize": 478,
+      "AMIModelInitializer._getNumAggressors": 255,
+      "AMIModelInitializer._getSampleInterval": 478,
+      "AMIModelInitializer._getBitTime": 478,
+      "ami_params_string": 252,
+      "ami_params_string.<locals>.<genexpr>": 252,
+      "AMIModel.getWave": 290,
+      "AMIModel._getAmiParamsOut": 96,
+      "_clock_prefix": 177,
+      "AMIModel.__del__": 144,
+      "AMIModelError.__init__": 257,
+      "AMIModel.last_getwave_calls": 18,
+      "AMIModel.close": 391,
+      "AMIModel._initialize": 178,
+      "AMIModel.last_close_call": 44,
+      "AMIModel.last_init_call": 10,
+      "AMIModel.root_name": 2
+    },
+    "fake_python_callbacks_sum": {
+      "Init": 252,
+      "GetWave": 211,
+      "Close": 97
+    },
+    "guarded_pytest_internal_elapsed_sum_s": 5.178930399983074,
+    "bootstrap_failure": {
+      "kind": "harness startup failure, not production red",
+      "test_execution_started": false,
+      "reason": "pytest colorama attempted windll.kernel32 and was blocked",
+      "blocked_attempts": 1,
+      "fake_callbacks": 0,
+      "tested_production_initialize_getWave_close": 0,
+      "real_C_and_model_load_calls": 0,
+      "tool_wall_s": 1.8278724,
+      "runner_internal_elapsed": "UNKNOWN",
+      "source_snapshot_sha256": "6dd6ae1f9381c596bb25606199a6fe404c24aa1ffbcefc4d5ffb5e4df22b6be3",
+      "full_trace": "bootstrap-stderr.txt"
+    },
+    "bootstrap_trace_provenance": "Tool-returned terminal traceback transcribed to UTF8/LF; not original process stderr byte file. No standard receipt/internal elapsed.",
+    "run07": "1 failed / 31 passed; original incorrect test field kept, later corrected. Not relabelled green.",
+    "mypy_static_runs": 3,
+    "mypy_static_internal_elapsed_sum_s": 13.945955499992124,
+    "mypy_final_exit_code": 1,
+    "mypy_baseline_exit_code": 1,
+    "mypy_normalized_diagnostics_match": true,
+    "remaining_diagnostics": "3 pre-existing: optional matplotlib stub; unchanged get_responses s_init/h_getw annotations. No full type-check pass.",
+    "full_lint": "Not run; ruff unavailable",
+    "total_task_wall_and_peak_RSS": "UNKNOWN",
+    "all_failed_history_preserved": true
+  },
+  "seal_generation_attempt_1": {
+    "exit_code": 1,
+    "tool_wall_s": 2.8608956,
+    "no_seal_written": true,
+    "phase": "read-only baseline metadata enumeration",
+    "failure": "Git glob *lock* also matched new docs paths containing clock. git show baseline:docs/issue24-clock-lifecycle-20261024/.gitattributes returned 128 because new path is absent at baseline.",
+    "trace_provenance": "Tool output retained in chat; this description is a post-failure transcription.",
+    "correction": "Enumerate baseline tree and select exact metadata names or basename ending .lock.",
+    "product_method_C_fake_calls": 0
+  },
+  "whitespace": {
+    "git_diff_check_baseline_exit_code": 0,
+    "raw_runs_only_exception": "docs/issue24-clock-lifecycle-20261024/.gitattributes disables whitespace interpretation for runs/**; raw CRLF snapshots unmodified. Initial staged check failed on raw CRLF and remains disclosed in README."
+  },
+  "read_only_review": {
+    "fixed_candidate": "2b475fa5a40455cbf391cbaf62ae25e77dcb0452",
+    "Standards": {
+      "hard": 0,
+      "actionable_smell": 0
+    },
+    "Spec": {
+      "missing_or_partial": 0,
+      "scope_creep": 0,
+      "implemented_wrong": 0
+    },
+    "report": "review.md",
+    "reviewers_executed_product_or_tests": false,
+    "PM_fresh_review_pending": true,
+    "after_review_changes": "Documentation clarification/review report/seal only; source/test/runner unchanged."
+  },
+  "not_done": [
+    "get_responses/rng changes",
+    "probe isolation",
+    "D/Web/archive integration",
+    "real AMI C or models",
+    "PyBERT dependency/gitlink migration",
+    "model downloads/compiles",
+    "remote fork/push/PR/issue mutations"
+  ],
+  "qualification": "Local software candidate only; effective NRZ/PAM4 clocks and E resource qualification remain BLOCKED. #24 not closed.",
+  "next_authority": "Stop writing after final local commit and clean verification; return to authorized PM for fresh review."
+}

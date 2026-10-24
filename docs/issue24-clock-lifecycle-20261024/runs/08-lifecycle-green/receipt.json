@@ -1,0 +1,420 @@
+{
+  "run_id": "08-lifecycle-green",
+  "pytest_exit_code": 0,
+  "selection": "",
+  "source_file": "E:\\serial-bus-simulator-dependencies\\pyami-clock-lifecycle\\src\\pyibisami\\ami\\model.py",
+  "source_sha256": "f19cd01fb138337f72107fcfc1ee1c292661e209263324fb340702cb9a22584c",
+  "test_file": "E:\\serial-bus-simulator-dependencies\\pyami-clock-lifecycle\\tests\\ami\\test_clock_lifecycle.py",
+  "test_sha256": "f0f628030dd7d7eeb9d96352680580a8530af9542dc5559c079be37db6456a3a",
+  "runner_sha256": "ed21150db7856ae56a28b34a7ef835bfcb786b2fd372944cead79b176dd979aa",
+  "actual_module_file": "E:\\serial-bus-simulator-dependencies\\pyami-clock-lifecycle\\src\\pyibisami\\ami\\model.py",
+  "common_module_file": "E:\\serial-bus-simulator-dependencies\\pyami-clock-lifecycle\\src\\pyibisami\\common.py",
+  "executable": "C:\\Users\\yx\\.codex\\worktrees\\pybert-issue4-resources\\serial-bus-simulator\\.venv\\Scripts\\python.exe",
+  "python": "3.13.15",
+  "numpy": "2.5.1",
+  "pytest": "9.1.1",
+  "HEAD": "5270d713e40bac2be5747bef09b92df79df9085b",
+  "elapsed_s": 0.3133671000105096,
+  "total_task_wall_and_peak_RSS": "UNKNOWN",
+  "blocked_attempts": {},
+  "production_python_calls": {
+    "AMIModelInitializer.__init__": 42,
+    "AMIModelInitializer._setChannelResponse": 42,
+    "AMIModelInitializer._setRowSize": 42,
+    "AMIModel.initialize": 43,
+    "AMIModel.close": 81,
+    "AMIModel._initialize": 42,
+    "AMIModelInitializer._getRowSize": 75,
+    "AMIModelInitializer._getNumAggressors": 41,
+    "AMIModelInitializer._getSampleInterval": 75,
+    "AMIModelInitializer._getBitTime": 75,
+    "ami_params_string": 40,
+    "ami_params_string.<locals>.<genexpr>": 40,
+    "AMIModel.getWave": 44,
+    "_clock_prefix": 24,
+    "AMIModel._getAmiParamsOut": 12,
+    "AMIModelError.__init__": 48,
+    "AMIModel.last_getwave_calls": 3,
+    "AMIModel.__del__": 18,
+    "AMIModel.last_close_call": 11,
+    "AMIModel.last_init_call": 2
+  },
+  "fake_python_callbacks": {
+    "Init": 40,
+    "GetWave": 29,
+    "Close": 20
+  },
+  "fake_events": [
+    [
+      "Init",
+      1
+    ],
+    [
+      "GetWave",
+      4
+    ],
+    [
+      "GetWave",
+      1
+    ],
+    [
+      "Init",
+      1
+    ],
+    [
+      "GetWave",
+      2
+    ],
+    [
+      "Init",
+      1
+    ],
+    [
+      "GetWave",
+      2
+    ],
+    [
+      "Init",
+      1
+    ],
+    [
+      "GetWave",
+      2
+    ],
+    [
+      "Init",
+      1
+    ],
+    [
+      "GetWave",
+      2
+    ],
+    [
+      "Init",
+      1
+    ],
+    [
+      "GetWave",
+      2
+    ],
+    [
+      "Init",
+      1
+    ],
+    [
+      "GetWave",
+      2
+    ],
+    [
+      "Init",
+      1
+    ],
+    [
+      "GetWave",
+      2
+    ],
+    [
+      "Init",
+      1
+    ],
+    [
+      "GetWave",
+      2
+    ],
+    [
+      "Init",
+      1
+    ],
+    [
+      "GetWave",
+      2
+    ],
+    [
+      "Init",
+      1
+    ],
+    [
+      "GetWave",
+      2
+    ],
+    [
+      "Init",
+      1
+    ],
+    [
+      "GetWave",
+      2
+    ],
+    [
+      "Init",
+      1
+    ],
+    [
+      "GetWave",
+      2
+    ],
+    [
+      "Init",
+      1
+    ],
+    [
+      "GetWave",
+      2
+    ],
+    [
+      "Init",
+      1
+    ],
+    [
+      "GetWave",
+      2
+    ],
+    [
+      "GetWave",
+      2
+    ],
+    [
+      "GetWave",
+      2
+    ],
+    [
+      "Init",
+      1
+    ],
+    [
+      "GetWave",
+      2
+    ],
+    [
+      "GetWave",
+      2
+    ],
+    [
+      "Init",
+      1
+    ],
+    [
+      "GetWave",
+      4
+    ],
+    [
+      "GetWave",
+      1
+    ],
+    [
+      "GetWave",
+      4
+    ],
+    [
+      "Init",
+      1
+    ],
+    [
+      "GetWave",
+      4
+    ],
+    [
+      "GetWave",
+      1
+    ],
+    [
+      "Init",
+      1
+    ],
+    [
+      "GetWave",
+      2
+    ],
+    [
+      "GetWave",
+      2
+    ],
+    [
+      "Close",
+      "fake-memory"
+    ],
+    [
+      "Init",
+      1
+    ],
+    [
+      "GetWave",
+      2
+    ],
+    [
+      "Init",
+      1
+    ],
+    [
+      "Close",
+      "fake-memory"
+    ],
+    [
+      "Init",
+      1
+    ],
+    [
+      "Close",
+      "fake-memory"
+    ],
+    [
+      "Init",
+      1
+    ],
+    [
+      "Close",
+      "fake-memory"
+    ],
+    [
+      "Init",
+      1
+    ],
+    [
+      "Close",
+      "fake-memory"
+    ],
+    [
+      "Init",
+      0
+    ],
+    [
+      "Close",
+      "failed-init"
+    ],
+    [
+      "Init",
+      1
+    ],
+    [
+      "Close",
+      "fake-memory"
+    ],
+    [
+      "Init",
+      2
+    ],
+    [
+      "Close",
+      "failed-init"
+    ],
+    [
+      "Init",
+      1
+    ],
+    [
+      "Close",
+      "fake-memory"
+    ],
+    [
+      "Init",
+      -1
+    ],
+    [
+      "Close",
+      "failed-init"
+    ],
+    [
+      "Init",
+      1
+    ],
+    [
+      "Close",
+      "fake-memory"
+    ],
+    [
+      "Init",
+      1
+    ],
+    [
+      "Close",
+      "partial-init"
+    ],
+    [
+      "Init",
+      1
+    ],
+    [
+      "Close",
+      "fake-memory"
+    ],
+    [
+      "Init",
+      1
+    ],
+    [
+      "Close",
+      "partial-init"
+    ],
+    [
+      "Init",
+      1
+    ],
+    [
+      "Close",
+      "fake-memory"
+    ],
+    [
+      "Init",
+      1
+    ],
+    [
+      "Close",
+      "fake-memory"
+    ],
+    [
+      "Init",
+      1
+    ],
+    [
+      "Close",
+      "fake-memory"
+    ],
+    [
+      "Init",
+      1
+    ],
+    [
+      "Close",
+      "fake-memory"
+    ],
+    [
+      "Init",
+      1
+    ],
+    [
+      "Close",
+      "fake-memory"
+    ],
+    [
+      "Init",
+      1
+    ],
+    [
+      "Close",
+      "fake-memory"
+    ],
+    [
+      "Init",
+      1
+    ],
+    [
+      "GetWave",
+      2
+    ]
+  ],
+  "real_calls": {
+    "Main": 0,
+    "COM": 0,
+    "coopt": 0,
+    "C_Init": 0,
+    "C_GetWave": 0,
+    "C_Close": 0,
+    "CDLL": 0,
+    "engine": 0,
+    "numerical_helper": 0,
+    "AMI_grammar_parser": 0,
+    "model_download": 0,
+    "model_compile": 0
+  },
+  "guard": "CDLL/loaders/audit, real constructor, parser imports, model response/DSP helpers blocked before tested methods"
+}

@@ -1,0 +1,131 @@
+"""Run only the no-DLL production-method tests and preserve each distinct red/green run."""
+
+import argparse
+from collections import Counter
+import ctypes
+import gc
+import hashlib
+import importlib.abc
+import io
+import json
+import os
+from pathlib import Path
+import platform
+import subprocess
+import sys
+from time import perf_counter
+import contextlib
+
+ROOT = Path(__file__).resolve().parents[2]
+HERE = Path(__file__).resolve().parent
+SOURCE = ROOT / "src/pyibisami/ami/model.py"
+TEST = ROOT / "tests/ami/test_clock_lifecycle.py"
+
+
+def digest(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def main():
+    arguments = argparse.ArgumentParser()
+    arguments.add_argument("run_id")
+    arguments.add_argument("-k", default="")
+    args = arguments.parse_args()
+    directory = HERE / "runs" / args.run_id
+    assert not directory.exists(), "Never replace a red, failure or green receipt"
+    directory.mkdir(parents=True)
+    (directory / "model.py.txt").write_bytes(SOURCE.read_bytes())
+    (directory / "test.py.txt").write_bytes(TEST.read_bytes())
+    sys.dont_write_bytecode = True
+    os.environ["PYTEST_DISABLE_PLUGIN_AUTOLOAD"] = "1"
+    sys.path.insert(0, str(ROOT / "src"))
+    blocked = Counter()
+
+    def forbidden(*_args, **_kwargs):
+        blocked["forbidden_entry"] += 1
+        raise AssertionError("No DLL, constructor, parser, engine or numerical helper is authorized")
+
+    def audit(event, _args):
+        if event == "ctypes.dlopen":
+            blocked["ctypes.dlopen"] += 1
+            raise AssertionError("ctypes.dlopen is forbidden")
+
+    sys.addaudithook(audit)
+    for name in ("CDLL", "PyDLL", "WinDLL", "OleDLL"):
+        if hasattr(ctypes, name):
+            setattr(ctypes, name, forbidden)
+    for name in ("cdll", "pydll", "windll", "oledll"):
+        loader = getattr(ctypes, name, None)
+        if loader is not None:
+            loader._dlltype = forbidden
+            loader.LoadLibrary = forbidden
+
+    class NoProductImports(importlib.abc.MetaPathFinder):
+        def find_spec(self, fullname, path=None, target=None):
+            if fullname.startswith(("pybert", "parsec", "pyibisami.ami.parser", "pyibisami.ami.configurator",
+                                    "pyibisami.ibis", "pyibisami.testing", "scipy", "matplotlib")):
+                blocked["import:" + fullname] += 1
+                raise AssertionError("Unauthorized import: " + fullname)
+            return None
+
+    sys.meta_path.insert(0, NoProductImports())
+    from pyibisami.ami import model
+    import pyibisami.common as common
+    import numpy as np
+    import pytest
+
+    assert Path(model.__file__).resolve() == SOURCE.resolve()
+    assert Path(common.__file__).resolve() == (ROOT / "src/pyibisami/common.py").resolve()
+    assert model.CDLL is forbidden
+    model.AMIModel.__init__ = forbidden
+    model.AMIModel.get_responses = forbidden
+    model.deconv_same = forbidden
+    model._debug_plot = forbidden
+    common.deconv_same = forbidden
+    common.raised_cosine = forbidden
+    calls = Counter()
+    path = str(SOURCE.resolve())
+
+    def profile(frame, event, _arg):
+        if event == "call" and frame.f_code.co_filename == path:
+            calls[frame.f_code.co_qualname] += 1
+
+    stdout, stderr = io.StringIO(), io.StringIO()
+    started = perf_counter()
+    sys.setprofile(profile)
+    try:
+        with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
+            result = pytest.main([str(TEST), "--noconftest", "-p", "no:cacheprovider", "-q", "-k", args.k])
+            gc.collect()
+    finally:
+        sys.setprofile(None)
+    elapsed = perf_counter() - started
+    module = next(module for module in tuple(sys.modules.values())
+                  if getattr(module, "__file__", None) == str(TEST) and hasattr(module, "FAKE_CALLS"))
+    (directory / "stdout.txt").write_bytes(stdout.getvalue().encode("utf-8"))
+    (directory / "stderr.txt").write_bytes(stderr.getvalue().encode("utf-8"))
+    receipt = dict(
+        run_id=args.run_id, pytest_exit_code=int(result), selection=args.k,
+        source_file=str(SOURCE), source_sha256=digest(SOURCE), test_file=str(TEST), test_sha256=digest(TEST),
+        runner_sha256=digest(Path(__file__)), actual_module_file=model.__file__,
+        common_module_file=common.__file__, executable=sys.executable, python=platform.python_version(),
+        numpy=np.__version__, pytest=pytest.__version__,
+        HEAD=subprocess.check_output(["git", "--no-optional-locks", "-C", str(ROOT), "rev-parse", "HEAD"], text=True).strip(),
+        elapsed_s=elapsed, total_task_wall_and_peak_RSS="UNKNOWN", blocked_attempts=dict(blocked),
+        production_python_calls=dict(calls), fake_python_callbacks=dict(module.FAKE_CALLS),
+        fake_events=module.FAKE_EVENTS,
+        real_calls={name: 0 for name in ("Main", "COM", "coopt", "C_Init", "C_GetWave", "C_Close", "CDLL",
+                                        "engine", "numerical_helper", "AMI_grammar_parser", "model_download", "model_compile")},
+        guard="CDLL/loaders/audit, real constructor, parser imports, model response/DSP helpers blocked before tested methods",
+    )
+    assert not blocked, dict(blocked)
+    assert digest(SOURCE) == digest(directory / "model.py.txt")
+    assert digest(TEST) == digest(directory / "test.py.txt")
+    (directory / "receipt.json").write_bytes((json.dumps(receipt, indent=2) + "\n").encode("utf-8"))
+    print(stdout.getvalue())
+    print(json.dumps(receipt, indent=2))
+    return int(result)
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -1,0 +1,36 @@
+============================= test session starts =============================
+platform win32 -- Python 3.13.15, pytest-9.1.1, pluggy-1.6.0 -- C:\Users\yx\.codex\worktrees\pybert-issue4-resources\serial-bus-simulator\.venv\Scripts\python.exe
+rootdir: E:\serial-bus-simulator-dependencies\pyami-clock-lifecycle
+configfile: pyproject.toml
+collecting ... collected 1 item
+
+tests/ami/test_clock_lifecycle.py::test_valid_prefix_keeps_zero_and_all_ticks_with_wave_params_order FAILED
+
+================================== FAILURES ===================================
+______ test_valid_prefix_keeps_zero_and_all_ticks_with_wave_params_order ______
+
+fake = <ami.test_clock_lifecycle.FakeAMI object at 0x00000225EEB62900>
+
+    def test_valid_prefix_keeps_zero_and_all_ticks_with_wave_params_order(fake):
+        fake.blocks = [
+            dict(clocks=[0., .1, .2, -1., np.nan, -7.], offset=10., params=b"first"),
+            dict(clocks=[.3, .4, -1., np.inf], offset=20., params=b"second"),
+        ]
+        wave, clocks, params = fake.dut.getWave(np.array([1., 2., 3., 4., 5.]), bits_per_call=2)
+        assert wave.tolist() == [11., 12., 13., 14., 25.]
+>       assert clocks.tolist() == [0., .1, .2, .3, .4]
+E       AssertionError: assert [0.0, 0.1] == [0.0, 0.1, 0.2, 0.3, 0.4]
+E         
+E         Right contains 3 more items, first extra item: 0.2
+E         
+E         Full diff:
+E           [
+E               0.0,
+E               0.1,...
+E         
+E         ...Full output truncated (4 lines hidden), use '-vv' to show
+
+tests\ami\test_clock_lifecycle.py:85: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/ami/test_clock_lifecycle.py::test_valid_prefix_keeps_zero_and_all_ticks_with_wave_params_order
+============================== 1 failed in 0.34s ==============================

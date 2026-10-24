@@ -1,0 +1,13 @@
+{
+  "kind": "harness startup failure, not production red",
+  "test_execution_started": false,
+  "reason": "pytest colorama attempted windll.kernel32 and was blocked",
+  "blocked_attempts": 1,
+  "fake_callbacks": 0,
+  "tested_production_initialize_getWave_close": 0,
+  "real_C_and_model_load_calls": 0,
+  "tool_wall_s": 1.8278724,
+  "runner_internal_elapsed": "UNKNOWN",
+  "source_snapshot_sha256": "6dd6ae1f9381c596bb25606199a6fe404c24aa1ffbcefc4d5ffb5e4df22b6be3",
+  "full_trace": "bootstrap-stderr.txt"
+}

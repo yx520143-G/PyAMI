@@ -1,0 +1,548 @@
+============================= test session starts =============================
+platform win32 -- Python 3.13.15, pytest-9.1.1, pluggy-1.6.0 -- C:\Users\yx\.codex\worktrees\pybert-issue4-resources\serial-bus-simulator\.venv\Scripts\python.exe
+rootdir: E:\serial-bus-simulator-dependencies\pyami-clock-lifecycle
+configfile: pyproject.toml
+collecting ... collected 19 items
+
+tests/ami/test_clock_lifecycle.py::test_valid_prefix_keeps_zero_and_all_ticks_with_wave_params_order PASSED
+tests/ami/test_clock_lifecycle.py::test_bad_prefix_poison_preserves_host_owned_raw[clocks0] FAILED
+tests/ami/test_clock_lifecycle.py::test_bad_prefix_poison_preserves_host_owned_raw[clocks1] FAILED
+tests/ami/test_clock_lifecycle.py::test_bad_prefix_poison_preserves_host_owned_raw[clocks2] FAILED
+tests/ami/test_clock_lifecycle.py::test_bad_prefix_poison_preserves_host_owned_raw[clocks3] FAILED
+tests/ami/test_clock_lifecycle.py::test_bad_prefix_poison_preserves_host_owned_raw[clocks4] FAILED
+tests/ami/test_clock_lifecycle.py::test_bad_prefix_poison_preserves_host_owned_raw[clocks5] FAILED
+tests/ami/test_clock_lifecycle.py::test_bad_prefix_poison_preserves_host_owned_raw[clocks6] FAILED
+tests/ami/test_clock_lifecycle.py::test_bad_prefix_poison_preserves_host_owned_raw[clocks7] FAILED
+tests/ami/test_clock_lifecycle.py::test_getwave_status_only_one_succeeds[0] FAILED
+tests/ami/test_clock_lifecycle.py::test_getwave_status_only_one_succeeds[2] FAILED
+tests/ami/test_clock_lifecycle.py::test_getwave_status_only_one_succeeds[-1] FAILED
+tests/ami/test_clock_lifecycle.py::test_getwave_exception_poison_retains_original_cause[error0] FAILED
+tests/ami/test_clock_lifecycle.py::test_getwave_exception_poison_retains_original_cause[error1] FAILED
+tests/ami/test_clock_lifecycle.py::test_cross_wrapper_monotonicity_survives_empty_prefix FAILED
+tests/ami/test_clock_lifecycle.py::test_duplicate_across_wrappers_is_failure FAILED
+tests/ami/test_clock_lifecycle.py::test_every_call_prefills_nan_and_zero_block_inherits PASSED
+tests/ami/test_clock_lifecycle.py::test_failure_does_not_publish_partial_tuple_and_observations_are_copies FAILED
+tests/ami/test_clock_lifecycle.py::test_successful_new_init_recovers_poisoned_epoch FAILED
+
+================================== FAILURES ===================================
+__________ test_bad_prefix_poison_preserves_host_owned_raw[clocks0] ___________
+
+buffer = (nan, nan, nan, nan, nan, nan, ...), previous = None
+
+    def _clock_prefix(buffer: tuple[float, ...], previous: Optional[float]) -> list[float]:
+        """Validate one C call's exact terminated prefix, without filtering its ticks."""
+        try:
+>           end = buffer.index(-1.)
+                  ^^^^^^^^^^^^^^^^^
+E           ValueError: tuple.index(x): x not in tuple
+
+src\pyibisami\ami\model.py:305: ValueError
+
+The above exception was the direct cause of the following exception:
+
+fake = <ami.test_clock_lifecycle.FakeAMI object at 0x000001DBA13F1950>
+clocks = []
+
+    @pytest.mark.parametrize("clocks", [
+        [], [0., .1], [-.1, -1.], [np.nan, -1.], [np.inf, -1.],
+        [0., 0., -1.], [.2, .1, -1.], [-1.0000000001, -1.],
+    ])
+    def test_bad_prefix_poison_preserves_host_owned_raw(fake, clocks):
+        fake.blocks = [dict(clocks=clocks, offset=3., params=b"failed params")]
+        with pytest.raises(RuntimeError) as failure:
+>           fake.dut.getWave(np.array([1., 2.]))
+
+tests\ami\test_clock_lifecycle.py:97: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\pyibisami\ami\model.py:538: in getWave
+    clock_times.extend(_clock_prefix(tuple(_clock_times), clock_times[-1] if clock_times else None))
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+buffer = (nan, nan, nan, nan, nan, nan, ...), previous = None
+
+    def _clock_prefix(buffer: tuple[float, ...], previous: Optional[float]) -> list[float]:
+        """Validate one C call's exact terminated prefix, without filtering its ticks."""
+        try:
+            end = buffer.index(-1.)
+        except ValueError as err:
+>           raise ValueError("Missing clock sentinel -1") from err
+E           ValueError: Missing clock sentinel -1
+
+src\pyibisami\ami\model.py:307: ValueError
+__________ test_bad_prefix_poison_preserves_host_owned_raw[clocks1] ___________
+
+buffer = (0.0, 0.1, nan, nan, nan, nan, ...), previous = None
+
+    def _clock_prefix(buffer: tuple[float, ...], previous: Optional[float]) -> list[float]:
+        """Validate one C call's exact terminated prefix, without filtering its ticks."""
+        try:
+>           end = buffer.index(-1.)
+                  ^^^^^^^^^^^^^^^^^
+E           ValueError: tuple.index(x): x not in tuple
+
+src\pyibisami\ami\model.py:305: ValueError
+
+The above exception was the direct cause of the following exception:
+
+fake = <ami.test_clock_lifecycle.FakeAMI object at 0x000001DBA13F1A90>
+clocks = [0.0, 0.1]
+
+    @pytest.mark.parametrize("clocks", [
+        [], [0., .1], [-.1, -1.], [np.nan, -1.], [np.inf, -1.],
+        [0., 0., -1.], [.2, .1, -1.], [-1.0000000001, -1.],
+    ])
+    def test_bad_prefix_poison_preserves_host_owned_raw(fake, clocks):
+        fake.blocks = [dict(clocks=clocks, offset=3., params=b"failed params")]
+        with pytest.raises(RuntimeError) as failure:
+>           fake.dut.getWave(np.array([1., 2.]))
+
+tests\ami\test_clock_lifecycle.py:97: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\pyibisami\ami\model.py:538: in getWave
+    clock_times.extend(_clock_prefix(tuple(_clock_times), clock_times[-1] if clock_times else None))
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+buffer = (0.0, 0.1, nan, nan, nan, nan, ...), previous = None
+
+    def _clock_prefix(buffer: tuple[float, ...], previous: Optional[float]) -> list[float]:
+        """Validate one C call's exact terminated prefix, without filtering its ticks."""
+        try:
+            end = buffer.index(-1.)
+        except ValueError as err:
+>           raise ValueError("Missing clock sentinel -1") from err
+E           ValueError: Missing clock sentinel -1
+
+src\pyibisami\ami\model.py:307: ValueError
+__________ test_bad_prefix_poison_preserves_host_owned_raw[clocks2] ___________
+
+fake = <ami.test_clock_lifecycle.FakeAMI object at 0x000001DBA1336FD0>
+clocks = [-0.1, -1.0]
+
+    @pytest.mark.parametrize("clocks", [
+        [], [0., .1], [-.1, -1.], [np.nan, -1.], [np.inf, -1.],
+        [0., 0., -1.], [.2, .1, -1.], [-1.0000000001, -1.],
+    ])
+    def test_bad_prefix_poison_preserves_host_owned_raw(fake, clocks):
+        fake.blocks = [dict(clocks=clocks, offset=3., params=b"failed params")]
+        with pytest.raises(RuntimeError) as failure:
+>           fake.dut.getWave(np.array([1., 2.]))
+
+tests\ami\test_clock_lifecycle.py:97: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\pyibisami\ami\model.py:538: in getWave
+    clock_times.extend(_clock_prefix(tuple(_clock_times), clock_times[-1] if clock_times else None))
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+buffer = (-0.1, -1.0, nan, nan, nan, nan, ...), previous = None
+
+    def _clock_prefix(buffer: tuple[float, ...], previous: Optional[float]) -> list[float]:
+        """Validate one C call's exact terminated prefix, without filtering its ticks."""
+        try:
+            end = buffer.index(-1.)
+        except ValueError as err:
+            raise ValueError("Missing clock sentinel -1") from err
+        prefix = list(buffer[:end])
+        for tick in prefix:
+            if not math.isfinite(tick) or tick < 0:
+>               raise ValueError("Clock prefix must be finite and nonnegative")
+E               ValueError: Clock prefix must be finite and nonnegative
+
+src\pyibisami\ami\model.py:311: ValueError
+__________ test_bad_prefix_poison_preserves_host_owned_raw[clocks3] ___________
+
+fake = <ami.test_clock_lifecycle.FakeAMI object at 0x000001DBA14C0D60>
+clocks = [nan, -1.0]
+
+    @pytest.mark.parametrize("clocks", [
+        [], [0., .1], [-.1, -1.], [np.nan, -1.], [np.inf, -1.],
+        [0., 0., -1.], [.2, .1, -1.], [-1.0000000001, -1.],
+    ])
+    def test_bad_prefix_poison_preserves_host_owned_raw(fake, clocks):
+        fake.blocks = [dict(clocks=clocks, offset=3., params=b"failed params")]
+        with pytest.raises(RuntimeError) as failure:
+>           fake.dut.getWave(np.array([1., 2.]))
+
+tests\ami\test_clock_lifecycle.py:97: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\pyibisami\ami\model.py:538: in getWave
+    clock_times.extend(_clock_prefix(tuple(_clock_times), clock_times[-1] if clock_times else None))
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+buffer = (nan, -1.0, nan, nan, nan, nan, ...), previous = None
+
+    def _clock_prefix(buffer: tuple[float, ...], previous: Optional[float]) -> list[float]:
+        """Validate one C call's exact terminated prefix, without filtering its ticks."""
+        try:
+            end = buffer.index(-1.)
+        except ValueError as err:
+            raise ValueError("Missing clock sentinel -1") from err
+        prefix = list(buffer[:end])
+        for tick in prefix:
+            if not math.isfinite(tick) or tick < 0:
+>               raise ValueError("Clock prefix must be finite and nonnegative")
+E               ValueError: Clock prefix must be finite and nonnegative
+
+src\pyibisami\ami\model.py:311: ValueError
+__________ test_bad_prefix_poison_preserves_host_owned_raw[clocks4] ___________
+
+fake = <ami.test_clock_lifecycle.FakeAMI object at 0x000001DBA13FAF90>
+clocks = [inf, -1.0]
+
+    @pytest.mark.parametrize("clocks", [
+        [], [0., .1], [-.1, -1.], [np.nan, -1.], [np.inf, -1.],
+        [0., 0., -1.], [.2, .1, -1.], [-1.0000000001, -1.],
+    ])
+    def test_bad_prefix_poison_preserves_host_owned_raw(fake, clocks):
+        fake.blocks = [dict(clocks=clocks, offset=3., params=b"failed params")]
+        with pytest.raises(RuntimeError) as failure:
+>           fake.dut.getWave(np.array([1., 2.]))
+
+tests\ami\test_clock_lifecycle.py:97: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\pyibisami\ami\model.py:538: in getWave
+    clock_times.extend(_clock_prefix(tuple(_clock_times), clock_times[-1] if clock_times else None))
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+buffer = (inf, -1.0, nan, nan, nan, nan, ...), previous = None
+
+    def _clock_prefix(buffer: tuple[float, ...], previous: Optional[float]) -> list[float]:
+        """Validate one C call's exact terminated prefix, without filtering its ticks."""
+        try:
+            end = buffer.index(-1.)
+        except ValueError as err:
+            raise ValueError("Missing clock sentinel -1") from err
+        prefix = list(buffer[:end])
+        for tick in prefix:
+            if not math.isfinite(tick) or tick < 0:
+>               raise ValueError("Clock prefix must be finite and nonnegative")
+E               ValueError: Clock prefix must be finite and nonnegative
+
+src\pyibisami\ami\model.py:311: ValueError
+__________ test_bad_prefix_poison_preserves_host_owned_raw[clocks5] ___________
+
+fake = <ami.test_clock_lifecycle.FakeAMI object at 0x000001DBA1490490>
+clocks = [0.0, 0.0, -1.0]
+
+    @pytest.mark.parametrize("clocks", [
+        [], [0., .1], [-.1, -1.], [np.nan, -1.], [np.inf, -1.],
+        [0., 0., -1.], [.2, .1, -1.], [-1.0000000001, -1.],
+    ])
+    def test_bad_prefix_poison_preserves_host_owned_raw(fake, clocks):
+        fake.blocks = [dict(clocks=clocks, offset=3., params=b"failed params")]
+        with pytest.raises(RuntimeError) as failure:
+>           fake.dut.getWave(np.array([1., 2.]))
+
+tests\ami\test_clock_lifecycle.py:97: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\pyibisami\ami\model.py:538: in getWave
+    clock_times.extend(_clock_prefix(tuple(_clock_times), clock_times[-1] if clock_times else None))
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+buffer = (0.0, 0.0, -1.0, nan, nan, nan, ...), previous = 0.0
+
+    def _clock_prefix(buffer: tuple[float, ...], previous: Optional[float]) -> list[float]:
+        """Validate one C call's exact terminated prefix, without filtering its ticks."""
+        try:
+            end = buffer.index(-1.)
+        except ValueError as err:
+            raise ValueError("Missing clock sentinel -1") from err
+        prefix = list(buffer[:end])
+        for tick in prefix:
+            if not math.isfinite(tick) or tick < 0:
+                raise ValueError("Clock prefix must be finite and nonnegative")
+            if previous is not None and tick <= previous:
+>               raise ValueError("Clock ticks must be strictly increasing")
+E               ValueError: Clock ticks must be strictly increasing
+
+src\pyibisami\ami\model.py:313: ValueError
+__________ test_bad_prefix_poison_preserves_host_owned_raw[clocks6] ___________
+
+fake = <ami.test_clock_lifecycle.FakeAMI object at 0x000001DBA1490380>
+clocks = [0.2, 0.1, -1.0]
+
+    @pytest.mark.parametrize("clocks", [
+        [], [0., .1], [-.1, -1.], [np.nan, -1.], [np.inf, -1.],
+        [0., 0., -1.], [.2, .1, -1.], [-1.0000000001, -1.],
+    ])
+    def test_bad_prefix_poison_preserves_host_owned_raw(fake, clocks):
+        fake.blocks = [dict(clocks=clocks, offset=3., params=b"failed params")]
+        with pytest.raises(RuntimeError) as failure:
+>           fake.dut.getWave(np.array([1., 2.]))
+
+tests\ami\test_clock_lifecycle.py:97: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\pyibisami\ami\model.py:538: in getWave
+    clock_times.extend(_clock_prefix(tuple(_clock_times), clock_times[-1] if clock_times else None))
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+buffer = (0.2, 0.1, -1.0, nan, nan, nan, ...), previous = 0.2
+
+    def _clock_prefix(buffer: tuple[float, ...], previous: Optional[float]) -> list[float]:
+        """Validate one C call's exact terminated prefix, without filtering its ticks."""
+        try:
+            end = buffer.index(-1.)
+        except ValueError as err:
+            raise ValueError("Missing clock sentinel -1") from err
+        prefix = list(buffer[:end])
+        for tick in prefix:
+            if not math.isfinite(tick) or tick < 0:
+                raise ValueError("Clock prefix must be finite and nonnegative")
+            if previous is not None and tick <= previous:
+>               raise ValueError("Clock ticks must be strictly increasing")
+E               ValueError: Clock ticks must be strictly increasing
+
+src\pyibisami\ami\model.py:313: ValueError
+__________ test_bad_prefix_poison_preserves_host_owned_raw[clocks7] ___________
+
+fake = <ami.test_clock_lifecycle.FakeAMI object at 0x000001DBA13E6C50>
+clocks = [-1.0000000001, -1.0]
+
+    @pytest.mark.parametrize("clocks", [
+        [], [0., .1], [-.1, -1.], [np.nan, -1.], [np.inf, -1.],
+        [0., 0., -1.], [.2, .1, -1.], [-1.0000000001, -1.],
+    ])
+    def test_bad_prefix_poison_preserves_host_owned_raw(fake, clocks):
+        fake.blocks = [dict(clocks=clocks, offset=3., params=b"failed params")]
+        with pytest.raises(RuntimeError) as failure:
+>           fake.dut.getWave(np.array([1., 2.]))
+
+tests\ami\test_clock_lifecycle.py:97: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\pyibisami\ami\model.py:538: in getWave
+    clock_times.extend(_clock_prefix(tuple(_clock_times), clock_times[-1] if clock_times else None))
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+buffer = (-1.0000000001, -1.0, nan, nan, nan, nan, ...), previous = None
+
+    def _clock_prefix(buffer: tuple[float, ...], previous: Optional[float]) -> list[float]:
+        """Validate one C call's exact terminated prefix, without filtering its ticks."""
+        try:
+            end = buffer.index(-1.)
+        except ValueError as err:
+            raise ValueError("Missing clock sentinel -1") from err
+        prefix = list(buffer[:end])
+        for tick in prefix:
+            if not math.isfinite(tick) or tick < 0:
+>               raise ValueError("Clock prefix must be finite and nonnegative")
+E               ValueError: Clock prefix must be finite and nonnegative
+
+src\pyibisami\ami\model.py:311: ValueError
+__________________ test_getwave_status_only_one_succeeds[0] ___________________
+
+fake = <ami.test_clock_lifecycle.FakeAMI object at 0x000001DBA13E7050>
+status = 0
+
+    @pytest.mark.parametrize("status", [0, 2, -1])
+    def test_getwave_status_only_one_succeeds(fake, status):
+        fake.blocks = [dict(clocks=[0., -1.], status=status)]
+>       with pytest.raises(RuntimeError) as failure:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE RuntimeError
+
+tests\ami\test_clock_lifecycle.py:112: Failed
+__________________ test_getwave_status_only_one_succeeds[2] ___________________
+
+fake = <ami.test_clock_lifecycle.FakeAMI object at 0x000001DBA1589310>
+status = 2
+
+    @pytest.mark.parametrize("status", [0, 2, -1])
+    def test_getwave_status_only_one_succeeds(fake, status):
+        fake.blocks = [dict(clocks=[0., -1.], status=status)]
+>       with pytest.raises(RuntimeError) as failure:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE RuntimeError
+
+tests\ami\test_clock_lifecycle.py:112: Failed
+__________________ test_getwave_status_only_one_succeeds[-1] __________________
+
+fake = <ami.test_clock_lifecycle.FakeAMI object at 0x000001DBA15899A0>
+status = -1
+
+    @pytest.mark.parametrize("status", [0, 2, -1])
+    def test_getwave_status_only_one_succeeds(fake, status):
+        fake.blocks = [dict(clocks=[0., -1.], status=status)]
+>       with pytest.raises(RuntimeError) as failure:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE RuntimeError
+
+tests\ami\test_clock_lifecycle.py:112: Failed
+________ test_getwave_exception_poison_retains_original_cause[error0] _________
+
+fake = <ami.test_clock_lifecycle.FakeAMI object at 0x000001DBA14A0AD0>
+error = OSError('fake ABI failure')
+
+    @pytest.mark.parametrize("error", [OSError("fake ABI failure"), ValueError("fake callback failure")])
+    def test_getwave_exception_poison_retains_original_cause(fake, error):
+        fake.blocks = [dict(clocks=[0., -1.], params=b"partial", error=error)]
+        with pytest.raises(RuntimeError) as failure:
+>           fake.dut.getWave(np.array([1., 2.]))
+
+tests\ami\test_clock_lifecycle.py:124: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\pyibisami\ami\model.py:524: in getWave
+    self._amiGetWave(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <ami.test_clock_lifecycle.FakeAMI object at 0x000001DBA14A0AD0>
+signal = <cparam 'P' (0x000001DBA155CE98)>, size = 2
+clocks = <cparam 'P' (0x000001DBA1533330)>
+output = <cparam 'P' (0x000001DBA155D818)>, handle = c_char_p(2042814867424)
+
+    def wave(self, signal, size, clocks, output, handle):
+        FAKE_CALLS["GetWave"] += 1
+        block = self.blocks.pop(0)
+        self.seen.append(dict(size=size, clocks=list(clocks._obj), wave=list(signal._obj)))
+        FAKE_EVENTS.append(("GetWave", size))
+        for i in range(size):
+            signal._obj[i] += block.get("offset", 0.)
+        for i, value in enumerate(block["clocks"]):
+            clocks._obj[i] = value
+        output._obj.value = block.get("params", b"(candidate )")
+        if "error" in block:
+>           raise block["error"]
+E           OSError: fake ABI failure
+
+tests\ami\test_clock_lifecycle.py:51: OSError
+------------------------------ Captured log call ------------------------------
+ERROR    pyibisami.ami.model:model.py:529 AMIModel.getWave(): AMI_GetWave() failed
+________ test_getwave_exception_poison_retains_original_cause[error1] _________
+
+fake = <ami.test_clock_lifecycle.FakeAMI object at 0x000001DBA144DB70>
+error = ValueError('fake callback failure')
+
+    @pytest.mark.parametrize("error", [OSError("fake ABI failure"), ValueError("fake callback failure")])
+    def test_getwave_exception_poison_retains_original_cause(fake, error):
+        fake.blocks = [dict(clocks=[0., -1.], params=b"partial", error=error)]
+        with pytest.raises(RuntimeError) as failure:
+>           fake.dut.getWave(np.array([1., 2.]))
+
+tests\ami\test_clock_lifecycle.py:124: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\pyibisami\ami\model.py:524: in getWave
+    self._amiGetWave(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <ami.test_clock_lifecycle.FakeAMI object at 0x000001DBA144DB70>
+signal = <cparam 'P' (0x000001DBA141E898)>, size = 2
+clocks = <cparam 'P' (0x000001DBA153AEB0)>
+output = <cparam 'P' (0x000001DBA141F118)>, handle = c_char_p(2042814867424)
+
+    def wave(self, signal, size, clocks, output, handle):
+        FAKE_CALLS["GetWave"] += 1
+        block = self.blocks.pop(0)
+        self.seen.append(dict(size=size, clocks=list(clocks._obj), wave=list(signal._obj)))
+        FAKE_EVENTS.append(("GetWave", size))
+        for i in range(size):
+            signal._obj[i] += block.get("offset", 0.)
+        for i, value in enumerate(block["clocks"]):
+            clocks._obj[i] = value
+        output._obj.value = block.get("params", b"(candidate )")
+        if "error" in block:
+>           raise block["error"]
+E           ValueError: fake callback failure
+
+tests\ami\test_clock_lifecycle.py:51: ValueError
+____________ test_cross_wrapper_monotonicity_survives_empty_prefix ____________
+
+fake = <ami.test_clock_lifecycle.FakeAMI object at 0x000001DBA145A340>
+
+    def test_cross_wrapper_monotonicity_survives_empty_prefix(fake):
+        fake.blocks = [dict(clocks=[.2, -1.]), dict(clocks=[-1., np.nan, -8.]), dict(clocks=[.1, -1.])]
+        assert fake.dut.getWave(np.array([1., 2.]))[1].tolist() == [.2]
+        assert fake.dut.getWave(np.array([3., 4.]))[1].tolist() == []
+>       with pytest.raises(RuntimeError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE RuntimeError
+
+tests\ami\test_clock_lifecycle.py:137: Failed
+__________________ test_duplicate_across_wrappers_is_failure __________________
+
+fake = <ami.test_clock_lifecycle.FakeAMI object at 0x000001DBA13A3E90>
+
+    def test_duplicate_across_wrappers_is_failure(fake):
+        fake.blocks = [dict(clocks=[0., -1.]), dict(clocks=[0., -1.])]
+        fake.dut.getWave(np.array([1., 2.]))
+>       with pytest.raises(RuntimeError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE RuntimeError
+
+tests\ami\test_clock_lifecycle.py:145: Failed
+___ test_failure_does_not_publish_partial_tuple_and_observations_are_copies ___
+
+buffer = (nan, nan, nan, nan, nan, nan, ...), previous = 0.0
+
+    def _clock_prefix(buffer: tuple[float, ...], previous: Optional[float]) -> list[float]:
+        """Validate one C call's exact terminated prefix, without filtering its ticks."""
+        try:
+>           end = buffer.index(-1.)
+                  ^^^^^^^^^^^^^^^^^
+E           ValueError: tuple.index(x): x not in tuple
+
+src\pyibisami\ami\model.py:305: ValueError
+
+The above exception was the direct cause of the following exception:
+
+fake = <ami.test_clock_lifecycle.FakeAMI object at 0x000001DBA1487120>
+
+    def test_failure_does_not_publish_partial_tuple_and_observations_are_copies(fake):
+        fake.blocks = [dict(clocks=[0., -1.], offset=2., params=b"done"), dict(clocks=[], params=b"partial")]
+        with pytest.raises(RuntimeError) as failure:
+>           fake.dut.getWave(np.arange(5.), bits_per_call=2)
+
+tests\ami\test_clock_lifecycle.py:160: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\pyibisami\ami\model.py:538: in getWave
+    clock_times.extend(_clock_prefix(tuple(_clock_times), clock_times[-1] if clock_times else None))
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+buffer = (nan, nan, nan, nan, nan, nan, ...), previous = 0.0
+
+    def _clock_prefix(buffer: tuple[float, ...], previous: Optional[float]) -> list[float]:
+        """Validate one C call's exact terminated prefix, without filtering its ticks."""
+        try:
+            end = buffer.index(-1.)
+        except ValueError as err:
+>           raise ValueError("Missing clock sentinel -1") from err
+E           ValueError: Missing clock sentinel -1
+
+src\pyibisami\ami\model.py:307: ValueError
+______________ test_successful_new_init_recovers_poisoned_epoch _______________
+
+fake = <ami.test_clock_lifecycle.FakeAMI object at 0x000001DBA1487540>
+
+    def test_successful_new_init_recovers_poisoned_epoch(fake):
+        fake.blocks = [dict(clocks=[1., -1.]), dict(clocks=[.5, -1.]), dict(clocks=[0., -1.])]
+        fake.dut.getWave(np.array([1., 2.]))
+>       with pytest.raises(RuntimeError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE RuntimeError
+
+tests\ami\test_clock_lifecycle.py:171: Failed
+=========================== short test summary info ===========================
+FAILED tests/ami/test_clock_lifecycle.py::test_bad_prefix_poison_preserves_host_owned_raw[clocks0]
+FAILED tests/ami/test_clock_lifecycle.py::test_bad_prefix_poison_preserves_host_owned_raw[clocks1]
+FAILED tests/ami/test_clock_lifecycle.py::test_bad_prefix_poison_preserves_host_owned_raw[clocks2]
+FAILED tests/ami/test_clock_lifecycle.py::test_bad_prefix_poison_preserves_host_owned_raw[clocks3]
+FAILED tests/ami/test_clock_lifecycle.py::test_bad_prefix_poison_preserves_host_owned_raw[clocks4]
+FAILED tests/ami/test_clock_lifecycle.py::test_bad_prefix_poison_preserves_host_owned_raw[clocks5]
+FAILED tests/ami/test_clock_lifecycle.py::test_bad_prefix_poison_preserves_host_owned_raw[clocks6]
+FAILED tests/ami/test_clock_lifecycle.py::test_bad_prefix_poison_preserves_host_owned_raw[clocks7]
+FAILED tests/ami/test_clock_lifecycle.py::test_getwave_status_only_one_succeeds[0]
+FAILED tests/ami/test_clock_lifecycle.py::test_getwave_status_only_one_succeeds[2]
+FAILED tests/ami/test_clock_lifecycle.py::test_getwave_status_only_one_succeeds[-1]
+FAILED tests/ami/test_clock_lifecycle.py::test_getwave_exception_poison_retains_original_cause[error0]
+FAILED tests/ami/test_clock_lifecycle.py::test_getwave_exception_poison_retains_original_cause[error1]
+FAILED tests/ami/test_clock_lifecycle.py::test_cross_wrapper_monotonicity_survives_empty_prefix
+FAILED tests/ami/test_clock_lifecycle.py::test_duplicate_across_wrappers_is_failure
+FAILED tests/ami/test_clock_lifecycle.py::test_failure_does_not_publish_partial_tuple_and_observations_are_copies
+FAILED tests/ami/test_clock_lifecycle.py::test_successful_new_init_recovers_poisoned_epoch
+======================== 17 failed, 2 passed in 1.20s =========================
