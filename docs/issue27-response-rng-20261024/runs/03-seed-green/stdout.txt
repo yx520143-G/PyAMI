@@ -1,0 +1,9 @@
+============================= test session starts =============================
+platform win32 -- Python 3.13.15, pytest-9.1.1, pluggy-1.6.0 -- C:\Users\yx\.codex\worktrees\pybert-issue4-resources\serial-bus-simulator\.venv\Scripts\python.exe
+rootdir: E:\serial-bus-simulator-dependencies\pyami-response-rng
+configfile: pyproject.toml
+collecting ... collected 1 item
+
+tests/ami/test_response_rng.py::test_seeded_generators_replay_both_probes_and_complete_returns PASSED
+
+============================== 1 passed in 1.40s ==============================

@@ -1,0 +1,33 @@
+{
+  "scope": "livePyBERT27; actual production get_responses unbound on plain fake self",
+  "seam_preconfirmed_by_live_contract": true,
+  "baseline": "e222e4094629e1ce9a2f8058ab42439fc21fadd8",
+  "source_sha256": "e74b082dbdd34b09282717ac63bbf88e34de65e7166ac909c5959a2d85ab0eab",
+  "input_sha256": {
+    "fixtures.json": "a6bc5b3324538bf01beef806fc18c9cb7363d1b769fc11dff4cfca02cbc618c1",
+    "environment.json": "9656d40391ecb92be9d2821bc46f965dcc7541ff777e7c5719cfb5b00e344ba5",
+    "run_guarded.py": "48736a265190df83971cdac18392ab92076c6e526c9be2024995347c4c797148"
+  },
+  "test_sha256": "d14ec24acbac3c42e9f9da765e80f6dd13eb069b0fb2e4938b30558ebfe8ed28",
+  "planned_runs": [
+    "01-seed-red expectedunexpectedkeyword rng onbaseline",
+    "02-seed-green after minimal API/source selection",
+    "03-contract-green full directed cases"
+  ],
+  "allowed_software": [
+    "real get_responses function body",
+    "real four response-key constant constructions per import",
+    "ordinary NumPy/RNG/FFT/convolve on frozen manual arrays",
+    "pure Python wave boundary stub"
+  ],
+  "forbidden": [
+    "AMIModel/Initializer instances",
+    "productioninitialize/getWave/close",
+    "deconv_same/otherDSPhelpers/parser/engine",
+    "Main/COM/coopt/AMI C/model DLL",
+    "CLI/fullsuite/old24tests/browser"
+  ],
+  "fixture_preparation": "3ordinary NumPy generators,9size8draws; no productimports. Input-preparation elapsed UNKNOWN; tool wall includesmetadata",
+  "guard_order": "preload ordinary NumPy/ctypes/pytest then model guards/profile then pyibisami import, constructors patched before tests; preload general platform/library internals not fully traced",
+  "counters": "entered production calls, stub/factory, constant init/postinit/hash, observed NumPy Python/C events separate; not total low-level NumPy instruction counts"
+}

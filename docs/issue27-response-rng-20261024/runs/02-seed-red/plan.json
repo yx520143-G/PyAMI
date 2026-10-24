@@ -1,0 +1,16 @@
+{
+  "run_id": "02-seed-red",
+  "selection": "",
+  "input_sha256": {
+    "source.py.txt": "e74b082dbdd34b09282717ac63bbf88e34de65e7166ac909c5959a2d85ab0eab",
+    "test.py.txt": "d14ec24acbac3c42e9f9da765e80f6dd13eb069b0fb2e4938b30558ebfe8ed28",
+    "runner.py.txt": "3bec5800de9cba847ab1e72b874be34668bd182550d2805437af2aacffe79d8f",
+    "fixtures.json": "a6bc5b3324538bf01beef806fc18c9cb7363d1b769fc11dff4cfca02cbc618c1",
+    "environment.json": "9656d40391ecb92be9d2821bc46f965dcc7541ff777e7c5719cfb5b00e344ba5"
+  },
+  "boundary": "actual unbound get_responses, plain fake self, Python wave stub",
+  "load_order": "preload ordinary NumPy/ctypes/pytest, then guards, then product import",
+  "preload_limit": "general platform/system-library internals not fully traced",
+  "allowed": "ordinary NumPy arrays/RNG and response NumPy calculations on frozen arrays",
+  "forbidden": "model constructors/loaders, production Init/GW/Close and DSP/parser/engine helpers"
+}

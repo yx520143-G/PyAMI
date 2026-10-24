@@ -1,0 +1,20 @@
+{
+  "command": [
+    "C:\\Users\\yx\\.codex\\worktrees\\pybert-issue4-resources\\serial-bus-simulator\\.venv\\Scripts\\python.exe",
+    "-B",
+    "-m",
+    "mypy",
+    "src/pyibisami/ami/model.py",
+    "--follow-imports=skip",
+    "--cache-dir",
+    "nul",
+    "--shadow-file",
+    "src/pyibisami/ami/model.py",
+    "E:\\serial-bus-simulator-dependencies\\pyami-response-rng\\docs\\issue27-response-rng-20261024\\runs\\02-seed-red\\source.py.txt"
+  ],
+  "exit_code": 1,
+  "elapsed_s": 5.050243600009708,
+  "scope": "static model.py only; no production method execution",
+  "source_sha256": "0e5a18c6d3402f10e2fb85af147f6ee961e5c67ae21fec555b1842f51a870442",
+  "shadow_sha256": "e74b082dbdd34b09282717ac63bbf88e34de65e7166ac909c5959a2d85ab0eab"
+}

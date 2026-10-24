@@ -1,0 +1,3 @@
+* -text
+runs/** -whitespace
+static/** -whitespace

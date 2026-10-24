@@ -631,7 +631,9 @@ class AMIModel:  # pylint: disable=too-many-instance-attributes
         max_run_length: int = 10,
         nbits: int = 20,
         calc_getw: bool = True,
-        debug: bool = False
+        debug: bool = False,
+        *,
+        rng: Optional[np.random.Generator] = None,
     ) -> AmiModelResponses:
         """
         Get the impulse response of an initialized IBIS-AMI model, alone and convolved with the channel.
@@ -648,6 +650,8 @@ class AMIModel:  # pylint: disable=too-many-instance-attributes
                 Default: True
             debug: Debug when ``True``.
                 Default: False
+            rng: Optional private Generator for the adaptation prefix; consumes its existing state.
+                Default: None (Creates a fresh generator only when calculating GetWave responses.)
 
         Returns:
             Dictionary containing the following keys
@@ -720,7 +724,8 @@ class AMIModel:  # pylint: disable=too-many-instance-attributes
             # Get model's step response.
             # - Give the model `ignore_bits` random bits, to adapt itself.
             # - After that, limit run length, to prevent de-adaptation.
-            rng = default_rng()
+            if rng is None:
+                rng = default_rng()
             u = np.concatenate(     # Construct the desired bit sequence.
                 (rng.integers(low=0, high=2, size=ignore_bits),
                  np.resize(np.array([0, 1]).repeat(max_run_length), nbits)

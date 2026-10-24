@@ -1,0 +1,25 @@
+============================= test session starts =============================
+platform win32 -- Python 3.13.15, pytest-9.1.1, pluggy-1.6.0 -- C:\Users\yx\.codex\worktrees\pybert-issue4-resources\serial-bus-simulator\.venv\Scripts\python.exe
+rootdir: E:\serial-bus-simulator-dependencies\pyami-response-rng
+configfile: pyproject.toml
+collecting ... collected 17 items
+
+tests/ami/test_response_rng.py::test_seeded_generators_replay_both_probes_and_complete_returns PASSED
+tests/ami/test_response_rng.py::test_different_seed_has_known_different_inputs PASSED
+tests/ami/test_response_rng.py::test_same_generator_advances_once_per_response_request PASSED
+tests/ami/test_response_rng.py::test_omitted_and_none_use_the_default_factory[False] PASSED
+tests/ami/test_response_rng.py::test_omitted_and_none_use_the_default_factory[True] PASSED
+tests/ami/test_response_rng.py::test_unused_getwave_neither_creates_nor_consumes_rng[omitted-calc_disabled] PASSED
+tests/ami/test_response_rng.py::test_unused_getwave_neither_creates_nor_consumes_rng[omitted-getwave_absent] PASSED
+tests/ami/test_response_rng.py::test_unused_getwave_neither_creates_nor_consumes_rng[none-calc_disabled] PASSED
+tests/ami/test_response_rng.py::test_unused_getwave_neither_creates_nor_consumes_rng[none-getwave_absent] PASSED
+tests/ami/test_response_rng.py::test_unused_getwave_neither_creates_nor_consumes_rng[provided-calc_disabled] PASSED
+tests/ami/test_response_rng.py::test_unused_getwave_neither_creates_nor_consumes_rng[provided-getwave_absent] PASSED
+tests/ami/test_response_rng.py::test_ignore_zero_keeps_empty_prefix_and_generator_state[provided] PASSED
+tests/ami/test_response_rng.py::test_ignore_zero_keeps_empty_prefix_and_generator_state[default] PASSED
+tests/ami/test_response_rng.py::test_legacy_global_rng_state_is_unchanged[provided] PASSED
+tests/ami/test_response_rng.py::test_legacy_global_rng_state_is_unchanged[default] PASSED
+tests/ami/test_response_rng.py::test_old_five_positional_arguments_keep_return_api PASSED
+tests/ami/test_response_rng.py::test_rng_is_keyword_only PASSED
+
+============================= 17 passed in 3.52s ==============================

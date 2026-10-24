@@ -1,0 +1,30 @@
+{
+  "issue": {
+    "url": "https://github.com/yx520143-G/PyBERT/issues/27",
+    "title": "[Dependency prerequisite] PyAMI get_responses 可选私有 RNG 接口",
+    "issue_number": 27,
+    "body": "父票 [PyBERT #10](https://github.com/yx520143-G/PyBERT/issues/10) 的 C0 剩余前置。#24 已交付 prefix/生命周期，#25/PR26 已完成固定 F 的来源安装；下一阶段 Rx probe/main 协调需要可复现的私有 RNG。用户已授权在本人 PyAMI fork 上工作，禁止向 capn-freako/PyAMI 或 capn-freako/PyBERT 写入。本票仅小范围依赖 API，不开放真实模型预算。\n\n唯一 owner 沿用 chat `01a16ccd-6cf3-79d1-bfc3-7d77aa7f7b61`（local，6.1-sol/xhigh）。实施仓库为 `yx520143-G/PyAMI`，固定基线 **F=`e222e4094629e1ce9a2f8058ab42439fc21fadd8` / tree `b9bd99398a8893f0c3d301e7758eec8f9d3858d0`**。新独立 clone/分支，建议 `E:/serial-bus-simulator-dependencies/pyami-response-rng` 与 `codex/pyami-response-rng`；无 hardlinks/alternates，不能在已封存 #24/#25 或旧 submodule 上继续写。startup 回报实际路径、branch、HEAD/tree、clean与隔离。\n\n范围与合同：\n1. 仅 `src/pyibisami/ami/model.py::AMIModel.get_responses` 最小新增可选 keyword-only `rng`（`numpy.random.Generator | None`或项目兼容等价类型，默认None），以及必要定向测试/文档。保留旧 positional 参数、默认值、返回结构、两次 probe 顺序、bits_per_call/Ignore_Bits/oversampling/响应计算。\n2. 显式传入 Generator 时直接使用该对象产生 adaptation prefix；不覆盖、不另建 Generator、不转成seed，不调用 NumPy legacy global RNG。未传或None时仍在原 GetWave 分支调用 `default_rng()`，保留旧 fresh-entropy 行为。未进入 GetWave 分支时不得创建/消耗 RNG；Ignore_Bits=0应保留既有空prefix行为。同一已提供 Generator 的状态随原一次 `integers(...size=Ignore_Bits)` 合法推进，不偷偷重置。不在PyAMI解释PyBERT seed=0；未来caller另行负责。\n3. 不借此修改 B1 prefix/状态/容量、initialize/getWave/close、deconv/FFT算法、probe/main隔离、TxGW/InitRx行为、PyBERT源码/依赖/gitlink/lock、archive/metadata。暂不进行PyBERT的下一次SHA迁移，待本API独立审查形成新固定来源。\n\n验证边界：\n- 先保存固定source/env/计划/输入及每批实际函数调用账，再做定向 red→green。允许实际生产 `get_responses` **unbound调用在普通内存fake self**，其 `getWave`为纯Python记录/固定返回的stub；不构造 AMIModel/Initializer、不调用生产initialize/getWave/close或C函数。模块import所需普通常量（如4个response-key对象）可真实构造，单独记账，不用fake constructor冒充。\n- 普通 NumPy数组/RNG及该生产函数内部对手工固定数组的 NumPy操作（diff/convolve/FFT等）可执行并明确分账；这属于软件测试，不是模型资格。实际 `deconv_same` 与其他原生DSP/helper/parser入口保持0；可在无Initresponse分支避免或用明确stub隔离，并记录其次数。运行前guard模型CDLL/真实C/AMIModel或Initializer构造/生产getWave/initialize/close、引擎/parser及非本票helper，必要NumPy载入与guard先后要写清，不能谎称安装/库内部通用系统活动已完整trace。\n- 证明：同seed的两个独立Generator给出相同prefix及两probe输入bytes；完整返回数组在固定fake wave输出下可对照；不同seed的已知确定样例；同一Generator多次调用按其状态推进；未传/显式None仍用默认factory（可用可追踪的受控factory验证，不要求fresh entropy两次输出相等）；calc_getw=false、GetWave_Exists=false不消费Generator；Ignore_Bits=0；legacy全局RNG状态不被改变；旧positional调用与原返回API保持。\n- 源码/AST确认差异仅API与RNG选择，禁止另写响应算法/复制函数冒充生产测试。不要跑原有DLL test_init、fullsuite、CLI、服务/GUI或浏览器；#24旧37tests与失败成本不重跑、不覆盖。定向软件测试轮次、生产get_responses/stub/常量构造、普通NumPy操作与失败/elapsed/UNKNOWN分开记录。真实Main/COM/coopt/AMI C Init/GW/Close/模型库/engine/AMI grammar/模型下载编译全部0。\n\n交付：同owner自主完成最小实现/定向验证/双轴自审，推本人PyAMI新branch并创建唯一Draft PR到本人PyAMI master（PR明确链接本PyBERT票）；固定HEAD/tree、source/test/runner/hash与原日志/成本、clean停写返权。owner不得自行merge/关闭票。PM fresh双轴通过后才决定合并及后续PyBERT SHA/C1接入。旧raw、工作区与环境全部保留；#10有效clocks/E SOURCE_BLOCKED、#4默认COM预算gate和父#1最终fresh数值review不解除。\n\n验收清单：\n- [ ] 独立clone基线F与旧原件保护确认。\n- [ ] 可选rng API最小实现，旧默认与positional/返回/响应算法保持。\n- [ ] 实际生产get_responses+纯fake验证覆盖RNG复现、状态推进、空/未用分支与全局RNG隔离。\n- [ ] guards、真实模型0、软件调用/失败/成本/UNKNOWN完整保存。\n- [ ] 唯一Draft PR固定并停写返权，PM fresh review通过；PyBERT接入与真实资格另行推进。\n",
+    "state": "open",
+    "user": {
+      "login": "yx520143-G",
+      "name": "yx520143-G",
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/269540313?v=4",
+      "id": 269540313
+    },
+    "assignees": null,
+    "labels": null,
+    "milestone": null,
+    "state_reason": null,
+    "comments": 0,
+    "created_at": "2026-10-24T14:33:09Z",
+    "updated_at": "2026-10-24T14:33:09Z",
+    "closed_at": null,
+    "display_url": "https://github.com/yx520143-G/PyBERT/issues/27",
+    "display_title": "[Dependency prerequisite] PyAMI get_responses 可选私有 RNG 接口"
+  },
+  "url": "https://github.com/yx520143-G/PyBERT/issues/27",
+  "title": "[Dependency prerequisite] PyAMI get_responses 可选私有 RNG 接口",
+  "display_url": "https://github.com/yx520143-G/PyBERT/issues/27",
+  "display_title": "[Dependency prerequisite] PyAMI get_responses 可选私有 RNG 接口"
+}
