@@ -36,6 +36,8 @@ initialize先通过同一close处理旧handle，再准备/能力检查和调用I
 
 这些是内存观察，不是通用持久日志；调用方须在后续initialize/下一次有效getWave覆盖前复制所需原件。字节/NaN不能直接当有限JSON数据，本票不实现Web保存/版本合同。
 
+需要旧的AMI参数/msg等C-backed属性时须在Close前读取并复制；Close后使用host-owned的last_*快照。本票明确禁止Close后getWave，不扩展为所有历史getter或__str__都可在未Init/已Close对象上使用。
+
 ## 定向红绿与guard
 
 唯一运行入口为 [run_guarded.py](run_guarded.py)，只运行新增定向文件，禁用conftest、外部pytest插件自动加载、cache和Windows console capture。运行命令使用既有只读Python环境，`uv run --no-project --python <已记录的Python路径> python -B docs/issue24-clock-lifecycle-20261024/run_guarded.py <新的唯一run_id>`；现有run目录拒绝覆盖。
@@ -57,6 +59,8 @@ initialize先通过同一close处理旧handle，再准备/能力检查和调用I
 
 所有 `runs/*` 的stdout/stderr、receipt、source/test/runner快照保留原bytes；pytest本身的断言显示截断仍按原输出保留。最终37项为同一套覆盖，不能把各轮通过次数相加作覆盖。测试的fixture结束只清除Python fake handle以防GC假回调污染，不代表模型资源清理；Close行为由对应真实方法用例验证。
 
+01的bootstrap-stderr.txt是工具返回的完整终端trace转存为UTF8/LF，不冒充当时未写出的进程stderr字节文件；bootstrap.json是事后失败说明，没有标准receipt，内部elapsed仍UNKNOWN。02起stdout/stderr与receipt由guard runner直接生成。
+
 最终run生产Python initialize48/getWave50/close113（另有析构43等），**fake Init45/GetWave33/Close22**。它们均非0，也不是实际AMI C调用；全历史9次guarded pytest的聚合在 [cost-ledger.json](cost-ledger.json)。所有真实Main/COM/coopt、C Init/GW/Close、CDLL/引擎、原生数值helper、AMI grammar parser、模型下载编译始终0。
 
 ## 静态检查、自审与成本
@@ -69,4 +73,4 @@ Python3.10 AST语法检查通过；get_responses AST与基线相同；只改必�
 
 9次有效guarded pytest内部elapsed合计 `5.178930399983074 s`；另有启动失败tool wall `1.8278724 s`（其内部elapsed UNKNOWN）、3次静态mypy内部elapsed合计 `13.945955499992124 s`，不可混作模型时间或任务wall。总任务wall/peak RSS UNKNOWN。失败批次、bootstrap拦截和静态失败全部留存，不删除费用或重命名成成功。完整fake/Python统计、源码hash及环境见各receipt与cost-ledger。
 
-独立Standards/Spec只读复核及最终封存另记录；只认本地候选。固定最终HEAD/tree/clean后停写返权给PM fresh review，未push、fork、PR、安装或关闭issue。
+独立Standards/Spec只读复核见 [review.md](review.md)，最终hash/来源/范围封存见 [verification.json](verification.json)；只认本地候选。固定最终HEAD/tree/clean后停写返权给PM fresh review，未push、fork、PR、安装或关闭issue。
