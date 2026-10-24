@@ -49,4 +49,4 @@ Python `3.13.15`、NumPy `2.5.1`、pytest `9.1.1`，复用既有只读解释器�
 
 所有 source/test/runner/fixture/stdout/stderr 原件以各批 hash 保持。`.gitattributes` 只对本目录 runs/static 关闭 Git whitespace 解释、保留字节；`.pre-commit-config.yaml` 仅精确排除 01 原始 stderr 的 trailing-whitespace 自动改写，其余 hook/文件规则保持。不存在大文件、EOF或mixed-line-ending的额外豁免。
 
-只向本人 PyAMI fork 新分支提交唯一 Draft PR，明确 Refs yx520143-G/PyBERT#27，不写上游、不自行merge/close。自审/最终封存另记录，固定HEAD/tree/clean后停写交PM fresh review；下一次PyBERT SHA迁移由PM另行决定。软件17pass不解除 #10有效clocks/E SOURCE_BLOCKED、#4默认COM预算gate或#1最终数值review。
+只向本人 PyAMI fork 新分支提交唯一 Draft PR，明确 Refs yx520143-G/PyBERT#27，不写上游、不自行merge/close。独立自审见 [review.md](review.md)，最终静态封存与 hash 清单见 [verification.json](verification.json)；固定 HEAD/tree/clean 后停写交 PM fresh review；下一次PyBERT SHA迁移由PM另行决定。软件17pass不解除 #10有效clocks/E SOURCE_BLOCKED、#4默认COM预算gate或#1最终数值review。
