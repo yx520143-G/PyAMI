@@ -1,0 +1,179 @@
+{
+  "kind": "actual guarded Python/fake callbacks, not model execution",
+  "runs": [
+    {
+      "run": "02-prefix-red",
+      "exit": 1,
+      "elapsed_s": 0.49573749999399297,
+      "source_sha256": "6dd6ae1f9381c596bb25606199a6fe404c24aa1ffbcefc4d5ffb5e4df22b6be3",
+      "test_sha256": "4745f61ee3c8cfaebd79668f4e29728962e9a79516da5d3a5ac89c0ebb7cf1e3",
+      "runner_sha256": "ed21150db7856ae56a28b34a7ef835bfcb786b2fd372944cead79b176dd979aa"
+    },
+    {
+      "run": "03-prefix-green",
+      "exit": 0,
+      "elapsed_s": 0.19987709999259096,
+      "source_sha256": "a9d96174e5d5a0f23a3e14e558b6d96693324a6f8ad99ce7e0ba1a881b62d7dd",
+      "test_sha256": "4745f61ee3c8cfaebd79668f4e29728962e9a79516da5d3a5ac89c0ebb7cf1e3",
+      "runner_sha256": "ed21150db7856ae56a28b34a7ef835bfcb786b2fd372944cead79b176dd979aa"
+    },
+    {
+      "run": "04-epoch-failure-red",
+      "exit": 1,
+      "elapsed_s": 1.3477253999881214,
+      "source_sha256": "a9d96174e5d5a0f23a3e14e558b6d96693324a6f8ad99ce7e0ba1a881b62d7dd",
+      "test_sha256": "7cf20b9bc0ce8b79cffb5a9120996fe38c1d7e9eb29cacbd9f556e7fef76fa0d",
+      "runner_sha256": "ed21150db7856ae56a28b34a7ef835bfcb786b2fd372944cead79b176dd979aa"
+    },
+    {
+      "run": "05-epoch-failure-green",
+      "exit": 0,
+      "elapsed_s": 0.2614025000075344,
+      "source_sha256": "6681c40e10321748fcb0c308e49675b4f1e64f7a8f1f6d0ad03dcc1b00df4fb7",
+      "test_sha256": "7cf20b9bc0ce8b79cffb5a9120996fe38c1d7e9eb29cacbd9f556e7fef76fa0d",
+      "runner_sha256": "ed21150db7856ae56a28b34a7ef835bfcb786b2fd372944cead79b176dd979aa"
+    },
+    {
+      "run": "06-lifecycle-red",
+      "exit": 1,
+      "elapsed_s": 1.1677534000045853,
+      "source_sha256": "6681c40e10321748fcb0c308e49675b4f1e64f7a8f1f6d0ad03dcc1b00df4fb7",
+      "test_sha256": "b5c0bddcf9c35346d90b55296f33c40112849b616ea77f92bacaf6cbb69ddf10",
+      "runner_sha256": "ed21150db7856ae56a28b34a7ef835bfcb786b2fd372944cead79b176dd979aa"
+    },
+    {
+      "run": "07-lifecycle-green",
+      "exit": 1,
+      "elapsed_s": 0.6894150000007357,
+      "source_sha256": "f19cd01fb138337f72107fcfc1ee1c292661e209263324fb340702cb9a22584c",
+      "test_sha256": "b5c0bddcf9c35346d90b55296f33c40112849b616ea77f92bacaf6cbb69ddf10",
+      "runner_sha256": "ed21150db7856ae56a28b34a7ef835bfcb786b2fd372944cead79b176dd979aa"
+    },
+    {
+      "run": "08-lifecycle-green",
+      "exit": 0,
+      "elapsed_s": 0.3133671000105096,
+      "source_sha256": "f19cd01fb138337f72107fcfc1ee1c292661e209263324fb340702cb9a22584c",
+      "test_sha256": "f0f628030dd7d7eeb9d96352680580a8530af9542dc5559c079be37db6456a3a",
+      "runner_sha256": "ed21150db7856ae56a28b34a7ef835bfcb786b2fd372944cead79b176dd979aa"
+    },
+    {
+      "run": "09-boundary-green",
+      "exit": 0,
+      "elapsed_s": 0.3446492999937618,
+      "source_sha256": "2e8a8dfce989d97efd411b98e8d59e6dcf29d342707c00b2f85d0227410db1f2",
+      "test_sha256": "4247db4f24cdc7e3d8cba247f879e54dc6c2295cdd9e02857a8ff51e4a73a8b4",
+      "runner_sha256": "ed21150db7856ae56a28b34a7ef835bfcb786b2fd372944cead79b176dd979aa"
+    },
+    {
+      "run": "10-final-green",
+      "exit": 0,
+      "elapsed_s": 0.35900309999124147,
+      "source_sha256": "e74b082dbdd34b09282717ac63bbf88e34de65e7166ac909c5959a2d85ab0eab",
+      "test_sha256": "fe281c74181fc812e82a056d4d0caa6b84df529ea15bb10fed68de13c671d681",
+      "runner_sha256": "214881a910d3d0bbe7ba8d9a2a6036ecd263fd10413a5272dbb5ac6b2b935a73"
+    }
+  ],
+  "guard_bootstrap_failure": {
+    "kind": "harness startup failure, not production red",
+    "test_execution_started": false,
+    "reason": "pytest colorama attempted windll.kernel32 and was blocked",
+    "blocked_attempts": 1,
+    "fake_callbacks": 0,
+    "tested_production_initialize_getWave_close": 0,
+    "real_C_and_model_load_calls": 0,
+    "tool_wall_s": 1.8278724,
+    "runner_internal_elapsed": "UNKNOWN",
+    "source_snapshot_sha256": "6dd6ae1f9381c596bb25606199a6fe404c24aa1ffbcefc4d5ffb5e4df22b6be3",
+    "full_trace": "bootstrap-stderr.txt"
+  },
+  "production_python_calls_sum": {
+    "AMIModelInitializer.__init__": 260,
+    "AMIModelInitializer._setChannelResponse": 260,
+    "AMIModelInitializer._setRowSize": 260,
+    "AMIModel.initialize": 265,
+    "AMIModelInitializer._getRowSize": 478,
+    "AMIModelInitializer._getNumAggressors": 255,
+    "AMIModelInitializer._getSampleInterval": 478,
+    "AMIModelInitializer._getBitTime": 478,
+    "ami_params_string": 252,
+    "ami_params_string.<locals>.<genexpr>": 252,
+    "AMIModel.getWave": 290,
+    "AMIModel._getAmiParamsOut": 96,
+    "_clock_prefix": 177,
+    "AMIModel.__del__": 144,
+    "AMIModelError.__init__": 257,
+    "AMIModel.last_getwave_calls": 18,
+    "AMIModel.close": 391,
+    "AMIModel._initialize": 178,
+    "AMIModel.last_close_call": 44,
+    "AMIModel.last_init_call": 10,
+    "AMIModel.root_name": 2
+  },
+  "fake_python_callbacks_sum": {
+    "Init": 252,
+    "GetWave": 211,
+    "Close": 97
+  },
+  "guarded_pytest_elapsed_sum_s": 5.178930399983074,
+  "mypy_static_runs": {
+    "mypy-baseline": {
+      "exit_code": 1,
+      "elapsed_s": 4.693463599993265,
+      "command": [
+        "C:\\Users\\yx\\.codex\\worktrees\\pybert-issue4-resources\\serial-bus-simulator\\.venv\\Scripts\\python.exe",
+        "-m",
+        "mypy",
+        "src/pyibisami/ami/model.py",
+        "--follow-imports=skip",
+        "--cache-dir",
+        "nul",
+        "--shadow-file",
+        "src/pyibisami/ami/model.py",
+        "docs\\issue24-clock-lifecycle-20261024\\runs\\02-prefix-red\\model.py.txt"
+      ],
+      "source_sha256": "e74b082dbdd34b09282717ac63bbf88e34de65e7166ac909c5959a2d85ab0eab",
+      "shadow_source_sha256": "6dd6ae1f9381c596bb25606199a6fe404c24aa1ffbcefc4d5ffb5e4df22b6be3",
+      "scope": "static; no production method execution"
+    },
+    "mypy-candidate-fixed": {
+      "exit_code": 1,
+      "elapsed_s": 4.733463500000653,
+      "command": [
+        "C:\\Users\\yx\\.codex\\worktrees\\pybert-issue4-resources\\serial-bus-simulator\\.venv\\Scripts\\python.exe",
+        "-m",
+        "mypy",
+        "src/pyibisami/ami/model.py",
+        "--follow-imports=skip",
+        "--cache-dir",
+        "nul"
+      ],
+      "source_sha256": "e74b082dbdd34b09282717ac63bbf88e34de65e7166ac909c5959a2d85ab0eab",
+      "shadow_source_sha256": null,
+      "scope": "static; no production method execution"
+    },
+    "mypy-candidate": {
+      "exit_code": 1,
+      "elapsed_s": 4.519028399998206,
+      "scope": "model.py only, static; no product execution",
+      "cache_dir": "nul"
+    }
+  },
+  "mypy_elapsed_sum_s": 13.945955499992124,
+  "task_wall_and_peak_RSS": "UNKNOWN",
+  "real_calls": {
+    "Main": 0,
+    "COM": 0,
+    "coopt": 0,
+    "C_Init": 0,
+    "C_GetWave": 0,
+    "C_Close": 0,
+    "CDLL": 0,
+    "engine": 0,
+    "numerical_helper": 0,
+    "AMI_grammar_parser": 0,
+    "model_download": 0,
+    "model_compile": 0
+  },
+  "scope": "only explicit directed test module; existing DLL test/general suite not run"
+}

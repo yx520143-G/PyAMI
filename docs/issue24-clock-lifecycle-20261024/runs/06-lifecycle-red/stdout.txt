@@ -1,0 +1,348 @@
+============================= test session starts =============================
+platform win32 -- Python 3.13.15, pytest-9.1.1, pluggy-1.6.0 -- C:\Users\yx\.codex\worktrees\pybert-issue4-resources\serial-bus-simulator\.venv\Scripts\python.exe
+rootdir: E:\serial-bus-simulator-dependencies\pyami-clock-lifecycle
+configfile: pyproject.toml
+collecting ... collected 32 items
+
+tests/ami/test_clock_lifecycle.py::test_valid_prefix_keeps_zero_and_all_ticks_with_wave_params_order PASSED
+tests/ami/test_clock_lifecycle.py::test_bad_prefix_poison_preserves_host_owned_raw[clocks0] PASSED
+tests/ami/test_clock_lifecycle.py::test_bad_prefix_poison_preserves_host_owned_raw[clocks1] PASSED
+tests/ami/test_clock_lifecycle.py::test_bad_prefix_poison_preserves_host_owned_raw[clocks2] PASSED
+tests/ami/test_clock_lifecycle.py::test_bad_prefix_poison_preserves_host_owned_raw[clocks3] PASSED
+tests/ami/test_clock_lifecycle.py::test_bad_prefix_poison_preserves_host_owned_raw[clocks4] PASSED
+tests/ami/test_clock_lifecycle.py::test_bad_prefix_poison_preserves_host_owned_raw[clocks5] PASSED
+tests/ami/test_clock_lifecycle.py::test_bad_prefix_poison_preserves_host_owned_raw[clocks6] PASSED
+tests/ami/test_clock_lifecycle.py::test_bad_prefix_poison_preserves_host_owned_raw[clocks7] PASSED
+tests/ami/test_clock_lifecycle.py::test_getwave_status_only_one_succeeds[0] PASSED
+tests/ami/test_clock_lifecycle.py::test_getwave_status_only_one_succeeds[2] PASSED
+tests/ami/test_clock_lifecycle.py::test_getwave_status_only_one_succeeds[-1] PASSED
+tests/ami/test_clock_lifecycle.py::test_getwave_exception_poison_retains_original_cause[error0] PASSED
+tests/ami/test_clock_lifecycle.py::test_getwave_exception_poison_retains_original_cause[error1] PASSED
+tests/ami/test_clock_lifecycle.py::test_cross_wrapper_monotonicity_survives_empty_prefix PASSED
+tests/ami/test_clock_lifecycle.py::test_duplicate_across_wrappers_is_failure PASSED
+tests/ami/test_clock_lifecycle.py::test_every_call_prefills_nan_and_zero_block_inherits PASSED
+tests/ami/test_clock_lifecycle.py::test_failure_does_not_publish_partial_tuple_and_observations_are_copies PASSED
+tests/ami/test_clock_lifecycle.py::test_successful_new_init_recovers_poisoned_epoch PASSED
+tests/ami/test_clock_lifecycle.py::test_close_is_idempotent_and_disowns_before_callback FAILED
+tests/ami/test_clock_lifecycle.py::test_reinit_prepare_failure_then_destructor_never_closes_old_handle_twice FAILED
+tests/ami/test_clock_lifecycle.py::test_reinit_capability_failure_retains_original_and_closed_state FAILED
+tests/ami/test_clock_lifecycle.py::test_failed_init_status_cleans_nonnull_handle_once_and_blocks_wave[0] FAILED
+tests/ami/test_clock_lifecycle.py::test_failed_init_status_cleans_nonnull_handle_once_and_blocks_wave[2] FAILED
+tests/ami/test_clock_lifecycle.py::test_failed_init_status_cleans_nonnull_handle_once_and_blocks_wave[-1] FAILED
+tests/ami/test_clock_lifecycle.py::test_init_exception_cleans_handle_and_retains_original[error0] FAILED
+tests/ami/test_clock_lifecycle.py::test_init_exception_cleans_handle_and_retains_original[error1] FAILED
+tests/ami/test_clock_lifecycle.py::test_init_failure_and_cleanup_failure_preserve_both_and_do_not_retry FAILED
+tests/ami/test_clock_lifecycle.py::test_explicit_close_failure_cannot_be_retried_by_close_or_destructor FAILED
+tests/ami/test_clock_lifecycle.py::test_destructor_failure_is_recorded_and_logged_without_escaping FAILED
+tests/ami/test_clock_lifecycle.py::test_reinit_close_failure_stops_before_new_init FAILED
+tests/ami/test_clock_lifecycle.py::test_uninitialized_destructor_and_stateless_success_are_safe FAILED
+
+================================== FAILURES ===================================
+____________ test_close_is_idempotent_and_disowns_before_callback _____________
+
+fake = <ami.test_clock_lifecycle.FakeAMI object at 0x000001A7C6300F70>
+
+    def test_close_is_idempotent_and_disowns_before_callback(fake):
+        fake.on_close = lambda: fake.dut.close()
+>       fake.dut.close()
+        ^^^^^^^^^^^^^^
+E       AttributeError: 'AMIModel' object has no attribute 'close'
+
+tests\ami\test_clock_lifecycle.py:192: AttributeError
+__ test_reinit_prepare_failure_then_destructor_never_closes_old_handle_twice __
+
+fake = <ami.test_clock_lifecycle.FakeAMI object at 0x000001A7C62D73E0>
+
+    def test_reinit_prepare_failure_then_destructor_never_closes_old_handle_twice(fake):
+        with pytest.raises(Exception):
+            fake.dut.initialize(object())
+        fake.dut.__del__()
+>       assert fake.closed == [b"fake-memory"]
+E       AssertionError: assert [b'fake-memor...'fake-memory'] == [b'fake-memory']
+E         
+E         Left contains one more item: b'fake-memory'
+E         
+E         Full diff:
+E           [
+E               b'fake-memory',
+E         +     b'fake-memory',
+E           ]
+
+tests\ami\test_clock_lifecycle.py:207: AssertionError
+______ test_reinit_capability_failure_retains_original_and_closed_state _______
+
+fake = <ami.test_clock_lifecycle.FakeAMI object at 0x000001A7C62D76A0>
+
+    def test_reinit_capability_failure_retains_original_and_closed_state(fake):
+        data = initializer()
+        data._info_params = {"GetWave_Exists": SimpleNamespace(pvalue=True)}
+        fake.dut._amiGetWave = None
+>       with pytest.raises(RuntimeError) as failure:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE RuntimeError
+
+tests\ami\test_clock_lifecycle.py:217: Failed
+____ test_failed_init_status_cleans_nonnull_handle_once_and_blocks_wave[0] ____
+
+fake = <ami.test_clock_lifecycle.FakeAMI object at 0x000001A7C62D7800>
+status = 0
+
+    @pytest.mark.parametrize("status", [0, 2, -1])
+    def test_failed_init_status_cleans_nonnull_handle_once_and_blocks_wave(fake, status):
+        fake.init_status, fake.init_handle = status, b"failed-init"
+>       with pytest.raises(RuntimeError) as failure:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE RuntimeError
+
+tests\ami\test_clock_lifecycle.py:227: Failed
+____ test_failed_init_status_cleans_nonnull_handle_once_and_blocks_wave[2] ____
+
+fake = <ami.test_clock_lifecycle.FakeAMI object at 0x000001A7C62D7AC0>
+status = 2
+
+    @pytest.mark.parametrize("status", [0, 2, -1])
+    def test_failed_init_status_cleans_nonnull_handle_once_and_blocks_wave(fake, status):
+        fake.init_status, fake.init_handle = status, b"failed-init"
+>       with pytest.raises(RuntimeError) as failure:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE RuntimeError
+
+tests\ami\test_clock_lifecycle.py:227: Failed
+___ test_failed_init_status_cleans_nonnull_handle_once_and_blocks_wave[-1] ____
+
+fake = <ami.test_clock_lifecycle.FakeAMI object at 0x000001A7C62D7D80>
+status = -1
+
+    @pytest.mark.parametrize("status", [0, 2, -1])
+    def test_failed_init_status_cleans_nonnull_handle_once_and_blocks_wave(fake, status):
+        fake.init_status, fake.init_handle = status, b"failed-init"
+>       with pytest.raises(RuntimeError) as failure:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE RuntimeError
+
+tests\ami\test_clock_lifecycle.py:227: Failed
+_______ test_init_exception_cleans_handle_and_retains_original[error0] ________
+
+fake = <ami.test_clock_lifecycle.FakeAMI object at 0x000001A7C6228100>
+error = OSError('fake Init ABI failure')
+
+    @pytest.mark.parametrize("error", [OSError("fake Init ABI failure"), ValueError("fake Init callback failure")])
+    def test_init_exception_cleans_handle_and_retains_original(fake, error):
+        fake.init_error, fake.init_handle = error, b"partial-init"
+        with pytest.raises(RuntimeError) as failure:
+>           fake.dut.initialize(initializer())
+
+tests\ami\test_clock_lifecycle.py:245: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\pyibisami\ami\model.py:443: in initialize
+    self._amiInit(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <ami.test_clock_lifecycle.FakeAMI object at 0x000001A7C6228100>
+impulse = <cparam 'P' (0x000001A7C5FAD570)>, rows = 8, aggressors = 0
+ts = c_double(0.5), ui = c_double(1.0), params = b'(candidate )'
+output = <cparam 'P' (0x000001A7C621FB98)>
+handle = <cparam 'P' (0x000001A7C621CD18)>
+message = <cparam 'P' (0x000001A7C621D898)>
+
+    def init(self, impulse, rows, aggressors, ts, ui, params, output, handle, message):
+        FAKE_CALLS["Init"] += 1
+        FAKE_EVENTS.append(("Init", self.init_status))
+        handle._obj.value = self.init_handle
+        output._obj.value = b"(candidate (initialized 1))"
+        message._obj.value = b"fake Init only"
+        if self.init_cleanup_error:
+            self.close_error = self.init_cleanup_error
+        if self.init_error:
+>           raise self.init_error
+E           OSError: fake Init ABI failure
+
+tests\ami\test_clock_lifecycle.py:46: OSError
+------------------------------ Captured log call ------------------------------
+ERROR    pyibisami.ami.model:model.py:455 AMIModel.initialize(): AMI_Init() failed: fake Init ABI failure
+_______ test_init_exception_cleans_handle_and_retains_original[error1] ________
+
+fake = <ami.test_clock_lifecycle.FakeAMI object at 0x000001A7C6228680>
+error = ValueError('fake Init callback failure')
+
+    @pytest.mark.parametrize("error", [OSError("fake Init ABI failure"), ValueError("fake Init callback failure")])
+    def test_init_exception_cleans_handle_and_retains_original(fake, error):
+        fake.init_error, fake.init_handle = error, b"partial-init"
+        with pytest.raises(RuntimeError) as failure:
+>           fake.dut.initialize(initializer())
+
+tests\ami\test_clock_lifecycle.py:245: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\pyibisami\ami\model.py:443: in initialize
+    self._amiInit(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <ami.test_clock_lifecycle.FakeAMI object at 0x000001A7C6228680>
+impulse = <cparam 'P' (0x000001A7C621BCB0)>, rows = 8, aggressors = 0
+ts = c_double(0.5), ui = c_double(1.0), params = b'(candidate )'
+output = <cparam 'P' (0x000001A7C6039B18)>
+handle = <cparam 'P' (0x000001A7C6039898)>
+message = <cparam 'P' (0x000001A7C607F718)>
+
+    def init(self, impulse, rows, aggressors, ts, ui, params, output, handle, message):
+        FAKE_CALLS["Init"] += 1
+        FAKE_EVENTS.append(("Init", self.init_status))
+        handle._obj.value = self.init_handle
+        output._obj.value = b"(candidate (initialized 1))"
+        message._obj.value = b"fake Init only"
+        if self.init_cleanup_error:
+            self.close_error = self.init_cleanup_error
+        if self.init_error:
+>           raise self.init_error
+E           ValueError: fake Init callback failure
+
+tests\ami\test_clock_lifecycle.py:46: ValueError
+____ test_init_failure_and_cleanup_failure_preserve_both_and_do_not_retry _____
+
+fake = <ami.test_clock_lifecycle.FakeAMI object at 0x000001A7C6228AA0>
+
+    def test_init_failure_and_cleanup_failure_preserve_both_and_do_not_retry(fake):
+        original, cleanup = ValueError("Init failed"), OSError("Close failed")
+        fake.init_error, fake.init_cleanup_error = original, cleanup
+        with pytest.raises(RuntimeError) as failure:
+>           fake.dut.initialize(initializer())
+
+tests\ami\test_clock_lifecycle.py:255: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\pyibisami\ami\model.py:443: in initialize
+    self._amiInit(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <ami.test_clock_lifecycle.FakeAMI object at 0x000001A7C6228AA0>
+impulse = <cparam 'P' (0x000001A7C62F60F0)>, rows = 8, aggressors = 0
+ts = c_double(0.5), ui = c_double(1.0), params = b'(candidate )'
+output = <cparam 'P' (0x000001A7C6268898)>
+handle = <cparam 'P' (0x000001A7C626A318)>
+message = <cparam 'P' (0x000001A7C626A598)>
+
+    def init(self, impulse, rows, aggressors, ts, ui, params, output, handle, message):
+        FAKE_CALLS["Init"] += 1
+        FAKE_EVENTS.append(("Init", self.init_status))
+        handle._obj.value = self.init_handle
+        output._obj.value = b"(candidate (initialized 1))"
+        message._obj.value = b"fake Init only"
+        if self.init_cleanup_error:
+            self.close_error = self.init_cleanup_error
+        if self.init_error:
+>           raise self.init_error
+E           ValueError: Init failed
+
+tests\ami\test_clock_lifecycle.py:46: ValueError
+____ test_explicit_close_failure_cannot_be_retried_by_close_or_destructor _____
+
+fake = <ami.test_clock_lifecycle.FakeAMI object at 0x000001A7C6228D60>
+
+    def test_explicit_close_failure_cannot_be_retried_by_close_or_destructor(fake):
+        error = OSError("fake Close failure")
+        fake.close_error = error
+        with pytest.raises(RuntimeError) as failure:
+>           fake.dut.close()
+            ^^^^^^^^^^^^^^
+E           AttributeError: 'AMIModel' object has no attribute 'close'
+
+tests\ami\test_clock_lifecycle.py:269: AttributeError
+_______ test_destructor_failure_is_recorded_and_logged_without_escaping _______
+
+fake = <ami.test_clock_lifecycle.FakeAMI object at 0x000001A7C6229020>
+caplog = <_pytest.logging.LogCaptureFixture object at 0x000001A7C60230E0>
+
+    def test_destructor_failure_is_recorded_and_logged_without_escaping(fake, caplog):
+        fake.close_error = OSError("destructor cleanup failed")
+        with caplog.at_level("ERROR", logger=model.__name__):
+>           fake.dut.__del__()
+
+tests\ami\test_clock_lifecycle.py:281: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\pyibisami\ami\model.py:370: in __del__
+    self._amiClose(self._ami_mem_handle)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <ami.test_clock_lifecycle.FakeAMI object at 0x000001A7C6229020>
+handle = c_char_p(1820093672832)
+
+    def close(self, handle):
+        FAKE_CALLS["Close"] += 1
+        self.closed.append(handle.value)
+        self.close_owned.append(bool(self.dut._ami_mem_handle))
+        FAKE_EVENTS.append(("Close", handle.value.decode()))
+        if self.close_error:
+>           raise self.close_error
+E           OSError: destructor cleanup failed
+
+tests\ami\test_clock_lifecycle.py:69: OSError
+_______________ test_reinit_close_failure_stops_before_new_init _______________
+
+fake = <ami.test_clock_lifecycle.FakeAMI object at 0x000001A7C6229230>
+
+    def test_reinit_close_failure_stops_before_new_init(fake):
+        count = FAKE_CALLS["Init"]
+        fake.close_error = OSError("old Close failed")
+        with pytest.raises(RuntimeError):
+>           fake.dut.initialize(initializer())
+
+tests\ami\test_clock_lifecycle.py:292: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\pyibisami\ami\model.py:409: in initialize
+    self._amiClose(self._ami_mem_handle)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <ami.test_clock_lifecycle.FakeAMI object at 0x000001A7C6229230>
+handle = c_char_p(1820093672832)
+
+    def close(self, handle):
+        FAKE_CALLS["Close"] += 1
+        self.closed.append(handle.value)
+        self.close_owned.append(bool(self.dut._ami_mem_handle))
+        FAKE_EVENTS.append(("Close", handle.value.decode()))
+        if self.close_error:
+>           raise self.close_error
+E           OSError: old Close failed
+
+tests\ami\test_clock_lifecycle.py:69: OSError
+________ test_uninitialized_destructor_and_stateless_success_are_safe _________
+
+fake = <ami.test_clock_lifecycle.FakeAMI object at 0x000001A7C6229390>
+
+    def test_uninitialized_destructor_and_stateless_success_are_safe(fake):
+        empty = model.AMIModel.__new__(model.AMIModel)
+>       empty.__del__()
+
+tests\ami\test_clock_lifecycle.py:301: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <pyibisami.ami.model.AMIModel object at 0x000001A7C61063F0>
+
+    def __del__(self):
+        """
+        Destructor - Calls ``AMI_Close()`` with handle to AMI model memory.
+    
+        This obviates the need for the user to call the ``AMI_Close()``
+        function explicitly, and guards against memory leaks, during
+        PyLab command prompt operation, by ensuring that ``AMI_Close()``
+        gets called automagically when the model goes out of scope.
+        """
+>       if self._ami_mem_handle:
+           ^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'AMIModel' object has no attribute '_ami_mem_handle'
+
+src\pyibisami\ami\model.py:369: AttributeError
+=========================== short test summary info ===========================
+FAILED tests/ami/test_clock_lifecycle.py::test_close_is_idempotent_and_disowns_before_callback
+FAILED tests/ami/test_clock_lifecycle.py::test_reinit_prepare_failure_then_destructor_never_closes_old_handle_twice
+FAILED tests/ami/test_clock_lifecycle.py::test_reinit_capability_failure_retains_original_and_closed_state
+FAILED tests/ami/test_clock_lifecycle.py::test_failed_init_status_cleans_nonnull_handle_once_and_blocks_wave[0]
+FAILED tests/ami/test_clock_lifecycle.py::test_failed_init_status_cleans_nonnull_handle_once_and_blocks_wave[2]
+FAILED tests/ami/test_clock_lifecycle.py::test_failed_init_status_cleans_nonnull_handle_once_and_blocks_wave[-1]
+FAILED tests/ami/test_clock_lifecycle.py::test_init_exception_cleans_handle_and_retains_original[error0]
+FAILED tests/ami/test_clock_lifecycle.py::test_init_exception_cleans_handle_and_retains_original[error1]
+FAILED tests/ami/test_clock_lifecycle.py::test_init_failure_and_cleanup_failure_preserve_both_and_do_not_retry
+FAILED tests/ami/test_clock_lifecycle.py::test_explicit_close_failure_cannot_be_retried_by_close_or_destructor
+FAILED tests/ami/test_clock_lifecycle.py::test_destructor_failure_is_recorded_and_logged_without_escaping
+FAILED tests/ami/test_clock_lifecycle.py::test_reinit_close_failure_stops_before_new_init
+FAILED tests/ami/test_clock_lifecycle.py::test_uninitialized_destructor_and_stateless_success_are_safe
+======================== 13 failed, 19 passed in 1.03s ========================

@@ -1,0 +1,87 @@
+"""Exercise production AMI methods through Python callbacks, never a model DLL."""
+
+from collections import Counter
+from ctypes import c_double
+
+import numpy as np
+import pytest
+
+from pyibisami.ami import model
+
+FAKE_CALLS = Counter()
+FAKE_EVENTS = []
+
+
+class FakeAMI:
+    """External ABI boundary only; waveform/clock expectations live in the tests."""
+
+    def __init__(self):
+        self.dut = model.AMIModel.__new__(model.AMIModel)
+        self.dut._ami_mem_handle = None
+        self.dut._filename = "NO_DLL_ALLOWED"
+        self.dut._amiInit = self.init
+        self.dut._amiGetWave = self.wave
+        self.dut._amiClose = self.close
+        self.blocks = []
+        self.seen = []
+        self.closed = []
+        self.init_status = 1
+        self.init_handle = b"fake-memory"
+        self.close_error = None
+
+    def init(self, impulse, rows, aggressors, ts, ui, params, output, handle, message):
+        FAKE_CALLS["Init"] += 1
+        FAKE_EVENTS.append(("Init", self.init_status))
+        handle._obj.value = self.init_handle
+        output._obj.value = b"(candidate (initialized 1))"
+        message._obj.value = b"fake Init only"
+        return self.init_status
+
+    def wave(self, signal, size, clocks, output, handle):
+        FAKE_CALLS["GetWave"] += 1
+        block = self.blocks.pop(0)
+        self.seen.append(dict(size=size, clocks=list(clocks._obj), wave=list(signal._obj)))
+        FAKE_EVENTS.append(("GetWave", size))
+        for i in range(size):
+            signal._obj[i] += block.get("offset", 0.)
+        for i, value in enumerate(block["clocks"]):
+            clocks._obj[i] = value
+        output._obj.value = block.get("params", b"(candidate )")
+        if "error" in block:
+            raise block["error"]
+        return block.get("status", 1)
+
+    def close(self, handle):
+        FAKE_CALLS["Close"] += 1
+        self.closed.append(handle.value)
+        FAKE_EVENTS.append(("Close", handle.value.decode()))
+        if self.close_error:
+            raise self.close_error
+
+
+def initializer():
+    result = model.AMIModelInitializer({"root_name": "candidate"},
+                                       bit_time=c_double(1.), sample_interval=c_double(.5))
+    result.channel_response = np.array([0., 1., 0., 0., 0., 0., 0., 0.])
+    return result
+
+
+@pytest.fixture
+def fake():
+    boundary = FakeAMI()
+    boundary.dut.initialize(initializer())
+    yield boundary
+    # These are only Python-owned fake handles. Avoid a GC-only Close contaminating callback counts.
+    boundary.dut._ami_mem_handle = None
+
+
+def test_valid_prefix_keeps_zero_and_all_ticks_with_wave_params_order(fake):
+    fake.blocks = [
+        dict(clocks=[0., .1, .2, -1., np.nan, -7.], offset=10., params=b"first"),
+        dict(clocks=[.3, .4, -1., np.inf], offset=20., params=b"second"),
+    ]
+    wave, clocks, params = fake.dut.getWave(np.array([1., 2., 3., 4., 5.]), bits_per_call=2)
+    assert wave.tolist() == [11., 12., 13., 14., 25.]
+    assert clocks.tolist() == [0., .1, .2, .3, .4]
+    assert params == ["first", "second"]
+    assert [entry["size"] for entry in fake.seen] == [4, 1]

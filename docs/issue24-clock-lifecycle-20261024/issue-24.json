@@ -1,0 +1,24 @@
+{
+  "url": "https://github.com/yx520143-G/PyBERT/issues/24",
+  "title": "[Dependency prerequisite] PyAMI clocks prefix 与 Init/Close 生命周期本地候选补丁",
+  "issue_number": 24,
+  "body": "父票 #10 的 B1/C0 前置工作。本票交付**独立本地 PyAMI 候选补丁与无 DLL 软件证据**；不代表已集成 PyBERT、已发布依赖、已获得真实 NRZ/PAM4 clocks 资格。\n\n设计依据：本地 `e0e6424f606ef28ebd217ac8c14098b1962a9ea4` / tree `4e419f62ddefa125435eb6d0e613015284ffd34a`，目录 `docs/webui/issue10/clocks-contract-20261024/`。PM fresh Standards hard0/smell0、Spec 原 Web 消费边界 P2 在设计层关闭/新增0，151/151材料检查通过。原15/20源码与旧receipts保留。B/C/D完整实施、S1依赖迁移和E真实模型资格继续分别跟踪。\n\n唯一 owner 沿用 chat `01a16ccd-6cf3-79d1-bfc3-7d77aa7f7b61`（local，6.1-sol/xhigh）。从 PyAMI 固定 `5270d713e40bac2be5747bef09b92df79df9085b` / tree `35b09659b5be907204823a82f95afdc9ec63d0a8` 创建独立本地 clone 与 `codex/pyami-clock-lifecycle` 分支；不得在旧 PyAMI submodule、PyBERT master/旧证据工作区写入。建议新目录 `E:/serial-bus-simulator-dependencies/pyami-clock-lifecycle`，有同名目录时另选且不覆盖。可从现存已核验本地 repo clone，不初始化/运行模型；不向任何远端 push。\n\n本轮决策只适用于候选分支：实现默认严格 clocks 格式检查和公开幂等 close()，形成实际代码供审查。保留 getWave 三元组。对全局 getWave 路径的兼容影响必须写清（包括无 use_clocks 的 probes/Tx/Init路径）；当前 PyBERT 不切换该候选依赖。外部 fork 创建、最终固定 F/安装元数据/PyPI发布路线以及模型执行尚未批准。\n\n范围：\n1. PyAMI `src/pyibisami/ami/model.py` 的最小纯 prefix 校验、getWave 聚合与 Init epoch 状态。每个真实调用边界前 buffer 填 NaN；首个精确 -1 前为有效向量，0合法；有效区 finite、非负、严格递增，跨 Python getWave 保留 last tick，空 prefix 不清 last。保留 B+8 分配兼容值但明确并非安全的通用模型容量保证；不得按 waveform UI 数截断/补齐/排序/筛正值。短末块按实际 wave_size。C返回码仅1成功；错误/缺sentinel/非法前缀后 epoch不可继续，成功重新Init才重置。\n2. 公开 `close()`：先使 wrapper 不再持有旧 handle，再调用旧 handle 的 Close；重复close/析构不重复释放。initialize与析构复用同一清理逻辑；准备/能力检查异常、Init失败且非空handle、Close失败与析构失败都有准确状态。Init返回码未成功不得允许getWave；Close失败不自动重试、不声称已释放。保留原异常/cleanup信息。必要错误类/每call诊断仅用于本合同，包含epoch/call/返回状态及host-owned raw buffer/wave/params，失败信息不能以部分成功三元组冒出。需为后续捕获保留明确、最小的 per-call 观察位置，不另建通用事件/插件框架。\n3. 定向测试必须调用当前**真实生产函数/方法**，用普通 Python fake callbacks 和 buffers 控制返回；不是再写一份 reference implementation。可无DLL安全导入 model 模块、以未初始化测试对象调用方法；提前封锁 CDLL/真实 AMIModel.__init__/真实库和原生数值 helper。使用固定expected向量/事件序列做红→绿。分列生产Python方法/fake callback次数与真实C调用0，不能把fake叫模型通过。\n4. 覆盖合法空/0 tick/变长/跨wrapper/短末块、sentinel后垃圾、缺sentinel、负/重复/倒退/NaN/Inf、状态失败/异常码、poison/newInit恢复、close后getWave拒绝、Close→prepare失败→析构只清理一次、Init失败清理一次及Close失败不重试。wave和params原顺序/内容、原bits_per_call=0继承行为保持。\n5. 仅必要源码、定向测试和新文档/原始测试日志。保留许可/作者、匹配本repo风格、UTF8无BOM。固定基线、执行源码/模块路径与环境，保存red/失败/green/raw/cost，最终local commit/tree/clean停写返权给PM fresh review。\n\n不包含：get_responses/rng、probe隔离/重新训练/随机性、PyBERT消费者/采样/时基/metadata/版本/归档、S1安装迁移、依赖/锁/gitlink变更、真实模型/下载/编译、任何上游或新fork写入。不得运行现有 `tests/ami/test_model.py::Test_AMIModel::test_init`（会加载真实DLL）或通用全套测试。纯测试所需运行方法不改变真实Main/COM/coopt/AMI C Init/GetWave/Close/CDLL加载/引擎构造/原生数值helper/AMI parser预算均0的约束。\n\n验收清单：\n- [ ] 独立clone基线/branch/clean启动核对，旧工作区与依赖不变。\n- [ ] B1 prefix/跨call/状态失败按生产代码红绿覆盖，wave/params/分块兼容明确。\n- [ ] C0 close/Init/析构/失败清理按生产方法无DLL回归，错误与成本真实保留。\n- [ ] 完整固定local补丁、来源/hash/所有原始red-green日志及0真实调用账，未push/迁移/运行模型。\n- [ ] owner停写返权后通过PM固定双轴review；仅认定本地候选补丁完成，父#10资格与依赖集成仍未完成。\n",
+  "state": "open",
+  "user": {
+    "login": "yx520143-G",
+    "name": "yx520143-G",
+    "email": null,
+    "avatar_url": "https://avatars.githubusercontent.com/u/269540313?v=4",
+    "id": 269540313
+  },
+  "assignees": null,
+  "labels": null,
+  "milestone": null,
+  "state_reason": null,
+  "comments": 0,
+  "created_at": "2026-10-24T12:38:24Z",
+  "updated_at": "2026-10-24T12:38:24Z",
+  "closed_at": null,
+  "display_url": "https://github.com/yx520143-G/PyBERT/issues/24",
+  "display_title": "[Dependency prerequisite] PyAMI clocks prefix 与 Init/Close 生命周期本地候选补丁"
+}

@@ -1,0 +1,8 @@
+src\pyibisami\ami\model.py:30: error: Cannot find implementation or library stub for module named "matplotlib"  [import-not-found]
+src\pyibisami\ami\model.py:30: note: See https://mypy.readthedocs.io/en/stable/running_mypy.html#missing-imports
+src\pyibisami\ami\model.py:607: error: Argument 1 to "_clock_prefix" has incompatible type "tuple[Any, ...] | str | Any | int | None"; expected "tuple[float, ...]"  [arg-type]
+src\pyibisami\ami\model.py:615: error: Incompatible types in assignment (expression has type "float", variable has type "None")  [assignment]
+src\pyibisami\ami\model.py:616: error: Argument 1 to "extend" of "list" has incompatible type "tuple[Any, ...] | str | Any | int | None"; expected "Iterable[float]"  [arg-type]
+src\pyibisami\ami\model.py:710: error: Need type annotation for "s_init"  [var-annotated]
+src\pyibisami\ami\model.py:746: error: Need type annotation for "h_getw"  [var-annotated]
+Found 6 errors in 1 file (checked 1 source file)

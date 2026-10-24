@@ -1,0 +1,19 @@
+{
+  "exit_code": 1,
+  "elapsed_s": 4.693463599993265,
+  "command": [
+    "C:\\Users\\yx\\.codex\\worktrees\\pybert-issue4-resources\\serial-bus-simulator\\.venv\\Scripts\\python.exe",
+    "-m",
+    "mypy",
+    "src/pyibisami/ami/model.py",
+    "--follow-imports=skip",
+    "--cache-dir",
+    "nul",
+    "--shadow-file",
+    "src/pyibisami/ami/model.py",
+    "docs\\issue24-clock-lifecycle-20261024\\runs\\02-prefix-red\\model.py.txt"
+  ],
+  "source_sha256": "e74b082dbdd34b09282717ac63bbf88e34de65e7166ac909c5959a2d85ab0eab",
+  "shadow_source_sha256": "6dd6ae1f9381c596bb25606199a6fe404c24aa1ffbcefc4d5ffb5e4df22b6be3",
+  "scope": "static; no production method execution"
+}

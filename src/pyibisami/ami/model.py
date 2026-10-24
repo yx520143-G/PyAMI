@@ -12,6 +12,7 @@ import copy as cp
 from ctypes import CDLL, byref, c_char_p, c_double  # pylint: disable=no-name-in-module
 from dataclasses import dataclass
 import logging
+import math
 from pathlib import Path
 from typing import Any, Optional, TypeAlias, TypedDict
 
@@ -298,6 +299,31 @@ class AMIModelInitializer:
     bit_time = property(_getBitTime, _setBitTime, doc="Link unit interval.")
 
 
+class AMIModelError(RuntimeError):
+    """An AMI boundary failure with Python-owned diagnostics and an optional cleanup failure."""
+
+    def __init__(self, reason: str, diagnostic: dict[str, Any], cleanup_error: Optional[Exception] = None):
+        self.diagnostic = cp.deepcopy(diagnostic)
+        self.cleanup_error = cleanup_error
+        super().__init__(f"{diagnostic['method']} (epoch {diagnostic['epoch']}): {reason}")
+
+
+def _clock_prefix(buffer: tuple[float, ...], previous: Optional[float]) -> list[float]:
+    """Validate one C call's exact terminated prefix, without filtering its ticks."""
+    try:
+        end = buffer.index(-1.)
+    except ValueError as err:
+        raise ValueError("Missing clock sentinel -1") from err
+    prefix = list(buffer[:end])
+    for tick in prefix:
+        if not math.isfinite(tick) or tick < 0:
+            raise ValueError("Clock prefix must be finite and nonnegative")
+        if previous is not None and tick <= previous:
+            raise ValueError("Clock ticks must be strictly increasing")
+        previous = tick
+    return prefix
+
+
 class AMIModel:  # pylint: disable=too-many-instance-attributes
     """
     Class defining the structure and behavior of an IBIS-AMI Model.
@@ -323,6 +349,7 @@ class AMIModel:  # pylint: disable=too-many-instance-attributes
 
         self._filename = filename
         self._ami_mem_handle = None
+        self._initialized = False
         my_dll = CDLL(filename)
         self._amiInit = my_dll.AMI_Init
         self._amiClose = my_dll.AMI_Close
@@ -340,8 +367,37 @@ class AMIModel:  # pylint: disable=too-many-instance-attributes
         PyLab command prompt operation, by ensuring that ``AMI_Close()``
         gets called automagically when the model goes out of scope.
         """
-        if self._ami_mem_handle:
-            self._amiClose(self._ami_mem_handle)
+        try:
+            self.close()
+        except Exception as err:
+            logger.exception("AMIModel destructor cleanup failed: %s", err)
+
+    def close(self) -> None:
+        """Disown the Init handle before Close; never retry it, including after a failure."""
+        handle = getattr(self, "_ami_mem_handle", None)
+        self._ami_mem_handle = None
+        self._initialized = False
+        if not handle:
+            return
+        record = dict(method="AMI_Close", epoch=getattr(self, "_epoch", 0),
+                      returned=False, release_status="unknown")
+        self._last_close_call = record
+        try:
+            self._amiClose(handle)
+        except Exception as err:
+            record.update(error=str(err), error_type=type(err).__name__)
+            raise AMIModelError(str(err), record) from err
+        record.update(returned=True, release_status="not_verified")
+
+    @property
+    def last_close_call(self) -> Optional[dict[str, Any]]:
+        """Host-owned Close observation; no-op close does not erase a previous failure."""
+        return cp.deepcopy(getattr(self, "_last_close_call", None))
+
+    @property
+    def last_init_call(self) -> Optional[dict[str, Any]]:
+        """Host-owned Init observation, including preparation and cleanup failures."""
+        return cp.deepcopy(getattr(self, "_last_init_call", None))
 
     def __str__(self):
         return "\n\t".join([
@@ -378,9 +434,34 @@ class AMIModel:  # pylint: disable=too-many-instance-attributes
             1. Allow for non-integral number of samples per unit interval.
         """
 
-        # Free any memory allocated by the previous initialization.
-        if self._ami_mem_handle:
-            self._amiClose(self._ami_mem_handle)
+        record = dict(method="AMI_Init", epoch=getattr(self, "_epoch", 0) + 1,
+                      status=None, returned=False, phase="closing_previous")
+        self._last_init_call = record
+        try:
+            self.close()
+            self._epoch = record["epoch"]
+            record["phase"] = "preparing"
+            self._initialize(init_object)
+        except Exception as err:
+            needs_cleanup = bool(getattr(self, "_ami_mem_handle", None))
+            cleanup_error = None
+            try:
+                self.close()
+            except Exception as cleanup:
+                cleanup_error = cleanup
+            record.update(error=str(err), error_type=type(err).__name__,
+                          cleanup=self.last_close_call if needs_cleanup else None)
+            raise AMIModelError(str(err), record, cleanup_error) from err
+        self._getwave_call = 0
+        self._c_call = 0
+        self._last_clock: Optional[float] = None
+        self._epoch_failed = False
+        self._initialized = True
+        self._last_getwave_calls: list[dict[str, Any]] = []
+        record["phase"] = "ready"
+
+    def _initialize(self, init_object: AMIModelInitializer) -> None:
+        """Prepare/call Init; initialize() owns readiness and failure cleanup."""
 
         # Set up the AMI_Init() arguments.
         # channel_response must be fetched as a ctypes array; the public property returns a plain list.
@@ -413,8 +494,13 @@ class AMIModel:  # pylint: disable=too-many-instance-attributes
         self._msg = c_char_p(b"")  # pylint: disable=attribute-defined-outside-init
 
         # Call AMI_Init(), via our Python wrapper.
+        record = self._last_init_call
+        record["phase"] = "calling"
+        record.update(input_impulse=tuple(self._initOut), row_size=self._row_size,
+                      num_aggressors=self._num_aggressors, sample_interval=self._sample_interval.value,
+                      bit_time=self._bit_time.value, params_in=self._ami_params_in)
         try:
-            self._amiInit(
+            record["status"] = self._amiInit(
                 byref(self._initOut),  # type: ignore
                 self._row_size,
                 self._num_aggressors,
@@ -425,20 +511,13 @@ class AMIModel:  # pylint: disable=too-many-instance-attributes
                 byref(self._ami_mem_handle),  # type: ignore
                 byref(self._msg),
             )
-        except OSError as err:
-            logger.error("AMIModel.initialize(): AMI_Init() failed: %s", err)
-            logger.debug(
-                "AMI_Init() address=%s; row_size=%s; num_aggressors=%s; "
-                "sample_interval=%s; bit_time=%s; ami_params_in=%s; "
-                "&initOut=%s; &ami_params_out=%s; &ami_mem_handle=%s; &msg=%s",
-                self._amiInit, self._row_size, self._num_aggressors,
-                self._sample_interval, self._bit_time, self._ami_params_in,
-                byref(self._initOut),  # type: ignore
-                byref(self._ami_params_out),
-                byref(self._ami_mem_handle),  # type: ignore
-                byref(self._msg),
-            )
-            raise
+            record["returned"] = True
+        finally:
+            record.update(init_out=tuple(self._initOut), params_raw=self._ami_params_out.value,
+                          message_raw=self._msg.value, has_handle=bool(self._ami_mem_handle))
+        if record["status"] != 1:
+            raise RuntimeError(f"Unsuccessful return status {record['status']!r}")
+        record["phase"] = "configuring_getwave"
 
         # Initialize attributes used by getWave().
         bit_time = init_object.bit_time
@@ -470,7 +549,7 @@ class AMIModel:  # pylint: disable=too-many-instance-attributes
             A tuple containing
 
                 - the processed waveform,
-                - the recovered slicer sampling instants, and
+                - valid edge-aligned clocks (without per-call sentinel/padding), and
                 - the list of output parameter strings received from each call to ``AMI_GetWave()``.
 
         Notes:
@@ -478,6 +557,11 @@ class AMIModel:  # pylint: disable=too-many-instance-attributes
             which means their values are: sampling instant - ui/2.
         """
 
+        self._getwave_call = getattr(self, "_getwave_call", 0) + 1
+        if not getattr(self, "_initialized", False) or getattr(self, "_epoch_failed", False):
+            raise AMIModelError("A successful new initialize() is required", dict(
+                method="AMI_GetWave", epoch=getattr(self, "_epoch", 0), python_call=self._getwave_call, c_call=None))
+        self._last_getwave_calls = []
         if bits_per_call:
             self._bits_per_call = int(bits_per_call)  # pylint: disable=attribute-defined-outside-init
         bits_per_call = int(self._bits_per_call)
@@ -485,7 +569,8 @@ class AMIModel:  # pylint: disable=too-many-instance-attributes
 
         # Create the required C types.
         Signal = c_double * samps_per_call
-        Clocks = c_double * (bits_per_call + 8)  # The "+8" is critical, to prevent access violations by the model. Value increased from +1 to +8 to avoid access violations for specific SERDES models.
+        # Historical compatibility margin, not a universal model capacity/safety guarantee.
+        Clocks = c_double * (bits_per_call + 8)
 
         idx = 0  # Holds the starting index of the next processing chunk.
         _clock_times = Clocks(0.0)
@@ -501,26 +586,44 @@ class AMIModel:  # pylint: disable=too-many-instance-attributes
             else:
                 tmp_wave = wave[idx: idx + samps_per_call]
             _wave = Signal(*tmp_wave)
+            _clock_times[:] = [float("nan")] * len(_clock_times)
+            self._c_call += 1
+            record: dict[str, Any] = dict(
+                method="AMI_GetWave", epoch=self._epoch, python_call=self._getwave_call,
+                c_call=self._c_call, wave_size=len(_wave), input_wave=tuple(_wave), status=None, returned=False)
             try:
-                self._amiGetWave(
-                    byref(_wave), len(_wave), byref(_clock_times),
-                    byref(self._ami_params_out), self._ami_mem_handle
-                )  # type: ignore
-            except OSError:
-                logger.error("AMIModel.getWave(): AMI_GetWave() failed")
-                logger.debug(
-                    "model=%s; byref(_wave)=%s; len(_wave)=%s; "
-                    "byref(_clock_times)=%s; byref(ami_params_out)=%s; ami_mem_handle=%s",
-                    self, byref(_wave), len(_wave),
-                    byref(_clock_times), byref(self._ami_params_out), self._ami_mem_handle,
-                )
-                raise
-            wave_out.extend(_wave)
-            clock_times.extend(_clock_times)
-            params_out.append(self.ami_params_out)
+                try:
+                    record["status"] = self._amiGetWave(
+                        byref(_wave), len(_wave), byref(_clock_times),
+                        byref(self._ami_params_out), self._ami_mem_handle
+                    )  # type: ignore
+                    record["returned"] = True
+                finally:
+                    record.update(wave=tuple(_wave), clock_buffer=tuple(_clock_times),
+                                  params_raw=self._ami_params_out.value)
+                    self._last_getwave_calls.append(record)
+                if record["status"] != 1:
+                    raise RuntimeError(f"Unsuccessful return status {record['status']!r}")
+                prefix = _clock_prefix(record["clock_buffer"], self._last_clock)
+                params = self.ami_params_out
+                record["valid_clocks"] = tuple(prefix)
+            except Exception as err:
+                self._epoch_failed = True
+                record.update(error=str(err), error_type=type(err).__name__)
+                raise AMIModelError(str(err), record) from err
+            if prefix:
+                self._last_clock = prefix[-1]
+            wave_out.extend(record["wave"])
+            clock_times.extend(prefix)
+            params_out.append(params)
             idx += len(_wave)
 
-        return np.array(wave_out), np.array(clock_times[: len(wave_out) // self._samps_per_bit]), params_out
+        return np.array(wave_out), np.array(clock_times), params_out
+
+    @property
+    def last_getwave_calls(self) -> tuple[dict[str, Any], ...]:
+        """Last ready-epoch getWave's C snapshots; rejected calls leave earlier evidence intact."""
+        return cp.deepcopy(tuple(getattr(self, "_last_getwave_calls", ())))
 
     def get_responses(  # pylint: disable=too-many-locals
         self,

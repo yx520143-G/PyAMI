@@ -1,0 +1,45 @@
+============================= test session starts =============================
+platform win32 -- Python 3.13.15, pytest-9.1.1, pluggy-1.6.0 -- C:\Users\yx\.codex\worktrees\pybert-issue4-resources\serial-bus-simulator\.venv\Scripts\python.exe
+rootdir: E:\serial-bus-simulator-dependencies\pyami-clock-lifecycle
+configfile: pyproject.toml
+collecting ... collected 37 items
+
+tests/ami/test_clock_lifecycle.py::test_valid_prefix_keeps_zero_and_all_ticks_with_wave_params_order PASSED
+tests/ami/test_clock_lifecycle.py::test_bad_prefix_poison_preserves_host_owned_raw[clocks0] PASSED
+tests/ami/test_clock_lifecycle.py::test_bad_prefix_poison_preserves_host_owned_raw[clocks1] PASSED
+tests/ami/test_clock_lifecycle.py::test_bad_prefix_poison_preserves_host_owned_raw[clocks2] PASSED
+tests/ami/test_clock_lifecycle.py::test_bad_prefix_poison_preserves_host_owned_raw[clocks3] PASSED
+tests/ami/test_clock_lifecycle.py::test_bad_prefix_poison_preserves_host_owned_raw[clocks4] PASSED
+tests/ami/test_clock_lifecycle.py::test_bad_prefix_poison_preserves_host_owned_raw[clocks5] PASSED
+tests/ami/test_clock_lifecycle.py::test_bad_prefix_poison_preserves_host_owned_raw[clocks6] PASSED
+tests/ami/test_clock_lifecycle.py::test_bad_prefix_poison_preserves_host_owned_raw[clocks7] PASSED
+tests/ami/test_clock_lifecycle.py::test_getwave_status_only_one_succeeds[0] PASSED
+tests/ami/test_clock_lifecycle.py::test_getwave_status_only_one_succeeds[2] PASSED
+tests/ami/test_clock_lifecycle.py::test_getwave_status_only_one_succeeds[-1] PASSED
+tests/ami/test_clock_lifecycle.py::test_getwave_exception_poison_retains_original_cause[error0] PASSED
+tests/ami/test_clock_lifecycle.py::test_getwave_exception_poison_retains_original_cause[error1] PASSED
+tests/ami/test_clock_lifecycle.py::test_cross_wrapper_monotonicity_survives_empty_prefix PASSED
+tests/ami/test_clock_lifecycle.py::test_duplicate_across_wrappers_is_failure PASSED
+tests/ami/test_clock_lifecycle.py::test_every_call_prefills_nan_and_zero_block_inherits PASSED
+tests/ami/test_clock_lifecycle.py::test_failure_does_not_publish_partial_tuple_and_observations_are_copies PASSED
+tests/ami/test_clock_lifecycle.py::test_successful_new_init_recovers_poisoned_epoch PASSED
+tests/ami/test_clock_lifecycle.py::test_close_is_idempotent_and_disowns_before_callback PASSED
+tests/ami/test_clock_lifecycle.py::test_reinit_prepare_failure_then_destructor_never_closes_old_handle_twice PASSED
+tests/ami/test_clock_lifecycle.py::test_reinit_capability_failure_retains_original_and_closed_state PASSED
+tests/ami/test_clock_lifecycle.py::test_failed_init_status_cleans_nonnull_handle_once_and_blocks_wave[0] PASSED
+tests/ami/test_clock_lifecycle.py::test_failed_init_status_cleans_nonnull_handle_once_and_blocks_wave[2] PASSED
+tests/ami/test_clock_lifecycle.py::test_failed_init_status_cleans_nonnull_handle_once_and_blocks_wave[-1] PASSED
+tests/ami/test_clock_lifecycle.py::test_init_exception_cleans_handle_and_retains_original[error0] PASSED
+tests/ami/test_clock_lifecycle.py::test_init_exception_cleans_handle_and_retains_original[error1] PASSED
+tests/ami/test_clock_lifecycle.py::test_init_failure_and_cleanup_failure_preserve_both_and_do_not_retry PASSED
+tests/ami/test_clock_lifecycle.py::test_explicit_close_failure_cannot_be_retried_by_close_or_destructor PASSED
+tests/ami/test_clock_lifecycle.py::test_destructor_failure_is_recorded_and_logged_without_escaping PASSED
+tests/ami/test_clock_lifecycle.py::test_reinit_close_failure_stops_before_new_init PASSED
+tests/ami/test_clock_lifecycle.py::test_uninitialized_destructor_and_stateless_success_are_safe PASSED
+tests/ami/test_clock_lifecycle.py::test_empty_prefix_and_empty_wave_do_not_reset_epoch_history PASSED
+tests/ami/test_clock_lifecycle.py::test_failed_init_with_null_handle_does_not_call_close_for_it PASSED
+tests/ami/test_clock_lifecycle.py::test_observations_copy_init_input_and_raw_parameters_without_parser PASSED
+tests/ami/test_clock_lifecycle.py::test_uninitialized_getwave_is_rejected_before_any_callback PASSED
+tests/ami/test_clock_lifecycle.py::test_default_empty_parameter_string_fallback_is_unchanged PASSED
+
+============================= 37 passed in 0.22s ==============================

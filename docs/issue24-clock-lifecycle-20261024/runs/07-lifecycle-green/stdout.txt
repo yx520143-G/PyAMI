@@ -1,0 +1,56 @@
+============================= test session starts =============================
+platform win32 -- Python 3.13.15, pytest-9.1.1, pluggy-1.6.0 -- C:\Users\yx\.codex\worktrees\pybert-issue4-resources\serial-bus-simulator\.venv\Scripts\python.exe
+rootdir: E:\serial-bus-simulator-dependencies\pyami-clock-lifecycle
+configfile: pyproject.toml
+collecting ... collected 32 items
+
+tests/ami/test_clock_lifecycle.py::test_valid_prefix_keeps_zero_and_all_ticks_with_wave_params_order PASSED
+tests/ami/test_clock_lifecycle.py::test_bad_prefix_poison_preserves_host_owned_raw[clocks0] PASSED
+tests/ami/test_clock_lifecycle.py::test_bad_prefix_poison_preserves_host_owned_raw[clocks1] PASSED
+tests/ami/test_clock_lifecycle.py::test_bad_prefix_poison_preserves_host_owned_raw[clocks2] PASSED
+tests/ami/test_clock_lifecycle.py::test_bad_prefix_poison_preserves_host_owned_raw[clocks3] PASSED
+tests/ami/test_clock_lifecycle.py::test_bad_prefix_poison_preserves_host_owned_raw[clocks4] PASSED
+tests/ami/test_clock_lifecycle.py::test_bad_prefix_poison_preserves_host_owned_raw[clocks5] PASSED
+tests/ami/test_clock_lifecycle.py::test_bad_prefix_poison_preserves_host_owned_raw[clocks6] PASSED
+tests/ami/test_clock_lifecycle.py::test_bad_prefix_poison_preserves_host_owned_raw[clocks7] PASSED
+tests/ami/test_clock_lifecycle.py::test_getwave_status_only_one_succeeds[0] PASSED
+tests/ami/test_clock_lifecycle.py::test_getwave_status_only_one_succeeds[2] PASSED
+tests/ami/test_clock_lifecycle.py::test_getwave_status_only_one_succeeds[-1] PASSED
+tests/ami/test_clock_lifecycle.py::test_getwave_exception_poison_retains_original_cause[error0] PASSED
+tests/ami/test_clock_lifecycle.py::test_getwave_exception_poison_retains_original_cause[error1] PASSED
+tests/ami/test_clock_lifecycle.py::test_cross_wrapper_monotonicity_survives_empty_prefix PASSED
+tests/ami/test_clock_lifecycle.py::test_duplicate_across_wrappers_is_failure PASSED
+tests/ami/test_clock_lifecycle.py::test_every_call_prefills_nan_and_zero_block_inherits PASSED
+tests/ami/test_clock_lifecycle.py::test_failure_does_not_publish_partial_tuple_and_observations_are_copies PASSED
+tests/ami/test_clock_lifecycle.py::test_successful_new_init_recovers_poisoned_epoch PASSED
+tests/ami/test_clock_lifecycle.py::test_close_is_idempotent_and_disowns_before_callback PASSED
+tests/ami/test_clock_lifecycle.py::test_reinit_prepare_failure_then_destructor_never_closes_old_handle_twice PASSED
+tests/ami/test_clock_lifecycle.py::test_reinit_capability_failure_retains_original_and_closed_state FAILED
+tests/ami/test_clock_lifecycle.py::test_failed_init_status_cleans_nonnull_handle_once_and_blocks_wave[0] PASSED
+tests/ami/test_clock_lifecycle.py::test_failed_init_status_cleans_nonnull_handle_once_and_blocks_wave[2] PASSED
+tests/ami/test_clock_lifecycle.py::test_failed_init_status_cleans_nonnull_handle_once_and_blocks_wave[-1] PASSED
+tests/ami/test_clock_lifecycle.py::test_init_exception_cleans_handle_and_retains_original[error0] PASSED
+tests/ami/test_clock_lifecycle.py::test_init_exception_cleans_handle_and_retains_original[error1] PASSED
+tests/ami/test_clock_lifecycle.py::test_init_failure_and_cleanup_failure_preserve_both_and_do_not_retry PASSED
+tests/ami/test_clock_lifecycle.py::test_explicit_close_failure_cannot_be_retried_by_close_or_destructor PASSED
+tests/ami/test_clock_lifecycle.py::test_destructor_failure_is_recorded_and_logged_without_escaping PASSED
+tests/ami/test_clock_lifecycle.py::test_reinit_close_failure_stops_before_new_init PASSED
+tests/ami/test_clock_lifecycle.py::test_uninitialized_destructor_and_stateless_success_are_safe PASSED
+
+================================== FAILURES ===================================
+______ test_reinit_capability_failure_retains_original_and_closed_state _______
+
+fake = <ami.test_clock_lifecycle.FakeAMI object at 0x0000022D31CFD700>
+
+    def test_reinit_capability_failure_retains_original_and_closed_state(fake):
+        data = initializer()
+        data._info_params = {"GetWave_Exists": SimpleNamespace(pvalue=True)}
+        fake.dut._amiGetWave = None
+>       with pytest.raises(RuntimeError) as failure:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE RuntimeError
+
+tests\ami\test_clock_lifecycle.py:217: Failed
+=========================== short test summary info ===========================
+FAILED tests/ami/test_clock_lifecycle.py::test_reinit_capability_failure_retains_original_and_closed_state
+======================== 1 failed, 31 passed in 0.54s =========================
