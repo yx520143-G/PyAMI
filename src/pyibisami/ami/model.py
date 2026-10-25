@@ -15,6 +15,7 @@ import logging
 import math
 from pathlib import Path
 from typing import Any, Optional, TypeAlias, TypedDict
+from uuid import uuid4
 
 import numpy as np
 from numpy.random     import default_rng
@@ -462,6 +463,8 @@ class AMIModel:  # pylint: disable=too-many-instance-attributes
         self._epoch_failed = False
         self._initialized = True
         self._last_getwave_calls: list[dict[str, Any]] = []
+        self._clock_epoch_id = str(uuid4())
+        self._clock_invocations: list[dict[str, Any]] = []
         record["phase"] = "ready"
 
     def _initialize(self, init_object: AMIModelInitializer) -> None:
@@ -566,6 +569,8 @@ class AMIModel:  # pylint: disable=too-many-instance-attributes
             raise AMIModelError("A successful new initialize() is required", dict(
                 method="AMI_GetWave", epoch=getattr(self, "_epoch", 0), python_call=self._getwave_call, c_call=None))
         self._last_getwave_calls = []
+        input_len = None
+        completed = False
         idx = 0  # Holds the starting index of the next processing chunk.
         record: dict[str, Any] = {"method": "AMI_GetWave", "epoch": self._epoch, "python_call": self._getwave_call,
                                   "c_call": None, "status": None, "returned": False,
@@ -648,6 +653,7 @@ class AMIModel:  # pylint: disable=too-many-instance-attributes
             record["phase"] = "assembling_result"
             result = np.array(wave_out), np.array(clock_times), params_out
             record["phase"] = "complete"
+            completed = True
             return result
         except BaseException as err:
             phase = record["phase"]
@@ -664,6 +670,23 @@ class AMIModel:  # pylint: disable=too-many-instance-attributes
             if isinstance(err, Exception):
                 raise AMIModelError(str(err), record) from err
             raise
+        finally:
+            # Keep only coordinates/progress, not another copy of every input/output waveform.
+            keys = ("epoch", "python_call", "c_call", "wave_size", "status", "returned", "phase",
+                    "valid_clocks", "failure_kind", "continuation")
+            self._clock_invocations.append({
+                "python_call": self._getwave_call, "input_samples": input_len, "completed": completed,
+                "chunks": [{key: call[key] for key in keys if key in call} for call in self._last_getwave_calls]})
+
+    @property
+    def clock_history(self) -> dict[str, Any]:
+        """Copied Init-epoch coordinates across Python calls; Close preserves this evidence."""
+        return cp.deepcopy({
+            "epoch_id": getattr(self, "_clock_epoch_id", None), "epoch": getattr(self, "_epoch", 0),
+            "sample_interval_s": getattr(self, "_last_init_call", {}).get("sample_interval"),
+            "python_calls": getattr(self, "_getwave_call", 0), "c_calls": getattr(self, "_c_call", 0),
+            "ready": getattr(self, "_initialized", False) and not getattr(self, "_epoch_failed", False),
+            "invocations": getattr(self, "_clock_invocations", [])})
 
     @property
     def last_getwave_calls(self) -> tuple[dict[str, Any], ...]:

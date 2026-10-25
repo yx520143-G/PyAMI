@@ -87,6 +87,47 @@ def initializer():
     return result
 
 
+def test_clock_history_retains_short_chunks_across_calls_and_close(fake):
+    identity = fake.dut.clock_history["epoch_id"]
+    fake.blocks = [{"clocks": [0., -1.]}, {"clocks": [1., -1.]}, {"clocks": [2., -1.]}]
+    fake.dut.getWave(np.arange(3.), bits_per_call=1)
+    fake.dut.getWave(np.arange(1.))
+    history = fake.dut.clock_history
+    assert history["epoch_id"] == identity and history["sample_interval_s"] == .5
+    assert [item["input_samples"] for item in history["invocations"]] == [3, 1]
+    assert [item["wave_size"] for call in history["invocations"] for item in call["chunks"]] == [2, 1, 1]
+    assert [item["valid_clocks"] for call in history["invocations"] for item in call["chunks"]] == [(0.,), (1.,), (2.,)]
+    history["invocations"].clear()
+    fake.dut.close()
+    assert len(fake.dut.clock_history["invocations"]) == 2
+    assert not fake.dut.clock_history["ready"]
+
+
+def test_new_init_has_new_identity_and_empty_history(fake):
+    first = fake.dut.clock_history["epoch_id"]
+    other = FakeAMI()
+    other.dut.initialize(initializer())
+    assert other.dut.clock_history["epoch_id"] != first
+    fake.dut.initialize(initializer())
+    assert fake.dut.clock_history["epoch_id"] != first
+    assert fake.dut.clock_history["epoch"] == 2
+    assert fake.dut.clock_history["invocations"] == []
+
+
+def test_failed_call_and_rejected_retry_cannot_form_complete_history(fake):
+    fake.blocks = [{"clocks": [0., -1.]}, {"clocks": [1., -1.], "status": 0}]
+    with pytest.raises(model.AMIModelError):
+        fake.dut.getWave(np.arange(3.), bits_per_call=1)
+    original = fake.dut.clock_history
+    assert not original["invocations"][0]["completed"]
+    assert [item["status"] for item in original["invocations"][0]["chunks"]] == [1, 0]
+    with pytest.raises(model.AMIModelError):
+        fake.dut.getWave(np.arange(1.))
+    current = fake.dut.clock_history
+    assert not current["ready"] and current["invocations"] == original["invocations"]
+    assert current["python_calls"] == original["python_calls"] + 1
+
+
 @pytest.mark.parametrize("block,phase,kind", [
     ({"clocks": [-1.], "status": 0}, "checking_status", "model_execution"),
     ({"clocks": []}, "validating_clocks", "clock_interface"),
