@@ -1,7 +1,7 @@
 """Exercise production AMI methods through Python callbacks, never a model DLL."""
 
 from collections import Counter
-from ctypes import c_double
+from ctypes import c_double, c_long
 from types import SimpleNamespace
 
 import numpy as np
@@ -30,15 +30,21 @@ class FakeAMI:
         self.init_handle = b"fake-memory"
         self.init_error = None
         self.init_cleanup_error = None
+        self.init_params = b"(candidate (initialized 1))"
+        self.write_init_params = True
+        self.init_seen = []
         self.close_error = None
+        self.close_status = 1
         self.close_owned = []
         self.on_close = None
 
     def init(self, impulse, rows, aggressors, ts, ui, params, output, handle, message):
         FAKE_CALLS["Init"] += 1
         FAKE_EVENTS.append(("Init", self.init_status))
+        self.init_seen.append(output._obj.value)
         handle._obj.value = self.init_handle
-        output._obj.value = b"(candidate (initialized 1))"
+        if self.write_init_params:
+            output._obj.value = self.init_params
         message._obj.value = b"fake Init only"
         if self.init_cleanup_error:
             self.close_error = self.init_cleanup_error
@@ -49,13 +55,15 @@ class FakeAMI:
     def wave(self, signal, size, clocks, output, handle):
         FAKE_CALLS["GetWave"] += 1
         block = self.blocks.pop(0)
-        self.seen.append(dict(size=size, clocks=list(clocks._obj), wave=list(signal._obj)))
+        self.seen.append(dict(size=size, clocks=list(clocks._obj), wave=list(signal._obj),
+                             params_in=output._obj.value))
         FAKE_EVENTS.append(("GetWave", size))
         for i in range(size):
             signal._obj[i] += block.get("offset", 0.)
         for i, value in enumerate(block["clocks"]):
             clocks._obj[i] = value
-        output._obj.value = block.get("params", b"(candidate )")
+        if block.get("write_params", True):
+            output._obj.value = block.get("params", b"(candidate )")
         if "error" in block:
             raise block["error"]
         return block.get("status", 1)
@@ -69,6 +77,7 @@ class FakeAMI:
             raise self.close_error
         if self.on_close:
             self.on_close()
+        return self.close_status
 
 
 def initializer():
@@ -352,3 +361,142 @@ def test_uninitialized_getwave_is_rejected_before_any_callback():
 def test_default_empty_parameter_string_fallback_is_unchanged(fake):
     fake.blocks = [dict(clocks=[0., -1.], params=None)]
     assert fake.dut.getWave(np.array([1., 2.]))[2] == ["(candidate )"]
+
+
+def test_close_binding_uses_c_long_return(monkeypatch):
+    def close(_handle):
+        return 1
+
+    close.restype = None
+    dll = SimpleNamespace(AMI_Init=lambda *args: 1, AMI_GetWave=lambda *args: 1, AMI_Close=close)
+    monkeypatch.setattr(model, "CDLL", lambda _filename: dll)
+    dut = model.AMIModel("NO_DLL_ALLOWED")
+    assert dut._amiClose.restype is c_long
+
+
+def test_close_success_retains_status_without_claiming_release(fake):
+    fake.dut.close()
+    record = fake.dut.last_close_call
+    assert record["status"] == 1 and record["returned"] is True
+    assert record["release_status"] == "not_verified"
+    record["status"] = 99
+    fake.dut.close()
+    assert fake.dut.last_close_call["status"] == 1
+    assert fake.closed == [b"fake-memory"]
+
+
+@pytest.mark.parametrize("status", [0, -1, 2, None])
+def test_close_bad_status_is_failure_and_never_retried(fake, status):
+    fake.close_status = status
+    with pytest.raises(model.AMIModelError, match="Unsuccessful return status") as failure:
+        fake.dut.close()
+    record = fake.dut.last_close_call
+    assert record["status"] == status and record["returned"] is True
+    assert record["release_status"] == "unknown"
+    assert failure.value.diagnostic == record
+    assert fake.close_owned == [False]
+    fake.dut.close()
+    fake.dut.__del__()
+    assert fake.dut.last_close_call == record
+    assert fake.closed == [b"fake-memory"]
+
+
+def test_close_exception_has_no_return_status(fake):
+    error = OSError("ABI callback failed")
+    fake.close_error = error
+    with pytest.raises(model.AMIModelError) as failure:
+        fake.dut.close()
+    assert failure.value.__cause__ is error
+    assert failure.value.diagnostic["status"] is None
+    assert failure.value.diagnostic["returned"] is False
+
+
+def test_reinit_close_zero_stops_before_new_init(fake):
+    count = FAKE_CALLS["Init"]
+    fake.close_status = 0
+    with pytest.raises(model.AMIModelError):
+        fake.dut.initialize(initializer())
+    assert FAKE_CALLS["Init"] == count
+    assert fake.dut.last_init_call["phase"] == "closing_previous"
+    assert fake.dut.last_close_call["status"] == 0
+    assert fake.closed == [b"fake-memory"]
+
+
+def test_init_failure_retains_cleanup_zero_separately(fake):
+    def fail_init(*args):
+        status = fake.init(*args)
+        fake.close_status = 0
+        return status
+
+    fake.init_status = 0
+    fake.dut._amiInit = fail_init
+    with pytest.raises(model.AMIModelError) as failure:
+        fake.dut.initialize(initializer())
+    assert failure.value.diagnostic["status"] == 0
+    cleanup = failure.value.cleanup_error
+    assert isinstance(cleanup, model.AMIModelError)
+    assert cleanup.diagnostic["status"] == 0 and cleanup.diagnostic["returned"] is True
+    fake.dut.close()
+    fake.dut.__del__()
+    assert fake.closed == [b"fake-memory", b"fake-memory"]
+
+
+def test_destructor_logs_close_zero_without_retry(fake, caplog):
+    fake.close_status = 0
+    with caplog.at_level("ERROR", logger=model.__name__):
+        fake.dut.__del__()
+    assert "Unsuccessful return status 0" in caplog.text
+    fake.dut.__del__()
+    assert fake.closed == [b"fake-memory"]
+
+
+@pytest.mark.parametrize("write,params", [
+    (False, None), (True, None), (True, b""), (True, b"(candidate )"), (True, b"(candidate (value 4))"),
+])
+def test_init_parameter_pointer_starts_null_and_raw_is_distinct(fake, write, params):
+    original = fake.dut.last_init_call
+    fake.write_init_params, fake.init_params = write, params
+    fake.dut.initialize(initializer())
+    assert fake.init_seen == [None, None]
+    assert fake.dut.last_init_call["params_raw"] == params
+    assert fake.dut.ami_params_out == (params.decode() if params else "(candidate )")
+    assert original["params_raw"] == b"(candidate (initialized 1))"
+
+
+def test_getwave_clears_parameter_pointer_per_chunk_and_python_call(fake):
+    fake.blocks = [
+        {"clocks": [-1.], "params": b"(candidate (value 8))"},
+        {"clocks": [-1.], "write_params": False},
+        {"clocks": [-1.], "params": None},
+        {"clocks": [-1.], "params": b""},
+        {"clocks": [-1.], "params": b"(candidate )"},
+        {"clocks": [-1.], "write_params": False},
+    ]
+    params = fake.dut.getWave(np.arange(17.), bits_per_call=2)[2]
+    records = fake.dut.last_getwave_calls
+    assert [record["params_raw"] for record in records] == [
+        b"(candidate (value 8))", None, None, b"", b"(candidate )"]
+    assert params == ["(candidate (value 8))"] + ["(candidate )"] * 4
+    assert [entry["size"] for entry in fake.seen] == [4, 4, 4, 4, 1]
+    assert fake.dut.getWave(np.array([1.]))[2] == ["(candidate )"]
+    assert fake.dut.last_getwave_calls[0]["params_raw"] is None
+    assert all(entry["params_in"] is None for entry in fake.seen)
+    assert records[0]["params_raw"] == b"(candidate (value 8))"
+
+
+@pytest.mark.parametrize("failure", [{"status": 0}, {"error": OSError("GetWave failed")}])
+def test_failed_getwave_without_parameter_write_never_reuses_previous_value(fake, failure):
+    fake.blocks = [{"clocks": [-1.], "params": b"previous"}, {"clocks": [-1.], "write_params": False, **failure}]
+    fake.dut.getWave(np.array([1.]))
+    with pytest.raises(model.AMIModelError) as caught:
+        fake.dut.getWave(np.array([1.]))
+    assert caught.value.diagnostic["params_raw"] is None
+    assert fake.seen[-1]["params_in"] is None
+
+
+def test_empty_wave_does_not_clear_last_parameter_observation(fake):
+    fake.blocks = [{"clocks": [-1.], "params": b"previous"}]
+    fake.dut.getWave(np.array([1.]))
+    assert fake.dut.getWave(np.array([]))[2] == []
+    assert fake.dut.ami_params_out == "previous"
+    assert len(fake.seen) == 1

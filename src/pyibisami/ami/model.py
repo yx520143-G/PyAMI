@@ -9,7 +9,7 @@ Copyright (c) 2019 David Banas; All rights reserved World wide.
 """
 
 import copy as cp
-from ctypes import CDLL, byref, c_char_p, c_double  # pylint: disable=no-name-in-module
+from ctypes import CDLL, byref, c_char_p, c_double, c_long  # pylint: disable=no-name-in-module
 from dataclasses import dataclass
 import logging
 import math
@@ -353,6 +353,7 @@ class AMIModel:  # pylint: disable=too-many-instance-attributes
         my_dll = CDLL(filename)
         self._amiInit = my_dll.AMI_Init
         self._amiClose = my_dll.AMI_Close
+        self._amiClose.restype = c_long
         try:
             self._amiGetWave = my_dll.AMI_GetWave
         except Exception:  # pylint: disable=broad-exception-caught
@@ -380,14 +381,17 @@ class AMIModel:  # pylint: disable=too-many-instance-attributes
         if not handle:
             return
         record = dict(method="AMI_Close", epoch=getattr(self, "_epoch", 0),
-                      returned=False, release_status="unknown")
+                      status=None, returned=False, release_status="unknown")
         self._last_close_call = record
         try:
-            self._amiClose(handle)
+            record["status"] = self._amiClose(handle)
+            record["returned"] = True
+            if record["status"] != 1:
+                raise RuntimeError(f"Unsuccessful return status {record['status']!r}")
         except Exception as err:
             record.update(error=str(err), error_type=type(err).__name__)
             raise AMIModelError(str(err), record) from err
-        record.update(returned=True, release_status="not_verified")
+        record["release_status"] = "not_verified"
 
     @property
     def last_close_call(self) -> Optional[dict[str, Any]]:
@@ -489,7 +493,7 @@ class AMIModel:  # pylint: disable=too-many-instance-attributes
             init_object.ami_params).encode("utf-8")
 
         # Set handle types.
-        self._ami_params_out = c_char_p(b"")  # pylint: disable=attribute-defined-outside-init
+        self._ami_params_out = c_char_p(None)  # pylint: disable=attribute-defined-outside-init
         self._ami_mem_handle = c_char_p(None)  # type: ignore  # pylint: disable=attribute-defined-outside-init
         self._msg = c_char_p(b"")  # pylint: disable=attribute-defined-outside-init
 
@@ -591,6 +595,7 @@ class AMIModel:  # pylint: disable=too-many-instance-attributes
             record: dict[str, Any] = dict(
                 method="AMI_GetWave", epoch=self._epoch, python_call=self._getwave_call,
                 c_call=self._c_call, wave_size=len(_wave), input_wave=tuple(_wave), status=None, returned=False)
+            self._ami_params_out.value = None  # Each C call must distinguish an unwritten output from an earlier return.
             try:
                 try:
                     record["status"] = self._amiGetWave(
@@ -813,7 +818,7 @@ class AMIModel:  # pylint: disable=too-many-instance-attributes
         return f"({self.root_name} )"
 
     ami_params_out = property(
-        _getAmiParamsOut, doc="The AMI parameter string returned by either `AMI_Init()` or `AMI_GetWave()`."
+        _getAmiParamsOut, doc="AMI output string, with a root-only fallback for NULL/empty; observations retain raw bytes."
     )
 
     def _getMsg(self):
