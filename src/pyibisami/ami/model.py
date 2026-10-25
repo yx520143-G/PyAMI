@@ -566,64 +566,104 @@ class AMIModel:  # pylint: disable=too-many-instance-attributes
             raise AMIModelError("A successful new initialize() is required", dict(
                 method="AMI_GetWave", epoch=getattr(self, "_epoch", 0), python_call=self._getwave_call, c_call=None))
         self._last_getwave_calls = []
-        if bits_per_call:
-            self._bits_per_call = int(bits_per_call)  # pylint: disable=attribute-defined-outside-init
-        bits_per_call = int(self._bits_per_call)
-        samps_per_call = int(self._samps_per_bit * bits_per_call)
-
-        # Create the required C types.
-        Signal = c_double * samps_per_call
-        # Historical compatibility margin, not a universal model capacity/safety guarantee.
-        Clocks = c_double * (bits_per_call + 8)
-
         idx = 0  # Holds the starting index of the next processing chunk.
-        _clock_times = Clocks(0.0)
-        wave_out: list[float] = []
-        clock_times: list[float] = []
-        params_out: list[str] = []
-        input_len = len(wave)
-        while idx < input_len:
-            remaining_samps = input_len - idx
-            if remaining_samps < samps_per_call:
-                Signal = c_double * remaining_samps
-                tmp_wave = wave[idx:]
-            else:
-                tmp_wave = wave[idx: idx + samps_per_call]
-            _wave = Signal(*tmp_wave)
-            _clock_times[:] = [float("nan")] * len(_clock_times)
-            self._c_call += 1
-            record: dict[str, Any] = dict(
-                method="AMI_GetWave", epoch=self._epoch, python_call=self._getwave_call,
-                c_call=self._c_call, wave_size=len(_wave), input_wave=tuple(_wave), status=None, returned=False)
-            self._ami_params_out.value = None  # Each C call must distinguish an unwritten output from an earlier return.
-            try:
+        record: dict[str, Any] = {"method": "AMI_GetWave", "epoch": self._epoch, "python_call": self._getwave_call,
+                                  "c_call": None, "status": None, "returned": False,
+                                  "phase": "preparing", "completed_samples": 0}
+        try:
+            if bits_per_call:
+                self._bits_per_call = int(bits_per_call)  # pylint: disable=attribute-defined-outside-init
+            bits_per_call = int(self._bits_per_call)
+            samps_per_call = int(self._samps_per_bit * bits_per_call)
+
+            # Create the required C types.
+            Signal = c_double * samps_per_call
+            # Historical compatibility margin, not a universal model capacity/safety guarantee.
+            Clocks = c_double * (bits_per_call + 8)
+
+            _clock_times = Clocks(0.0)
+            wave_out: list[float] = []
+            clock_times: list[float] = []
+            params_out: list[str] = []
+            input_len = len(wave)
+            while idx < input_len:
+                record = {"method": "AMI_GetWave", "epoch": self._epoch, "python_call": self._getwave_call,
+                          "c_call": None, "status": None, "returned": False,
+                          "phase": "preparing", "completed_samples": idx}
+                self._last_getwave_calls.append(record)
+                remaining_samps = input_len - idx
+                if remaining_samps < samps_per_call:
+                    Signal = c_double * remaining_samps
+                    tmp_wave = wave[idx:]
+                else:
+                    tmp_wave = wave[idx: idx + samps_per_call]
+                _wave = Signal(*tmp_wave)
+                _clock_times[:] = [float("nan")] * len(_clock_times)
+                record.update(wave_size=len(_wave), input_wave=tuple(_wave))
+                self._ami_params_out.value = None  # Do not let an unwritten output reuse an earlier return.
+                self._c_call += 1
+                record.update(c_call=self._c_call, phase="calling")
+                call_error = None
+                failure_phase = "calling"
                 try:
                     record["status"] = self._amiGetWave(
                         byref(_wave), len(_wave), byref(_clock_times),
                         byref(self._ami_params_out), self._ami_mem_handle
                     )  # type: ignore
                     record["returned"] = True
-                finally:
-                    record.update(wave=tuple(_wave), clock_buffer=tuple(_clock_times),
-                                  params_raw=self._ami_params_out.value)
-                    self._last_getwave_calls.append(record)
-                if record["status"] != 1:
-                    raise RuntimeError(f"Unsuccessful return status {record['status']!r}")
+                except BaseException as err:
+                    call_error = err
+                if record["returned"] and record["status"] != 1:
+                    call_error = RuntimeError(f"Unsuccessful return status {record['status']!r}")
+                    failure_phase = "checking_status"
+                elif record["returned"]:
+                    record["completed_samples"] = idx + len(_wave)  # Successful C calls in this Python invocation.
+                record["phase"] = "capturing_outputs"
+                try:
+                    record["wave"] = tuple(_wave)
+                    record["clock_buffer"] = tuple(_clock_times)
+                    record["params_raw"] = self._ami_params_out.value
+                except Exception as capture_error:
+                    if call_error is None:
+                        raise
+                    record.update(capture_error=str(capture_error), capture_error_type=type(capture_error).__name__)
+                if call_error is not None:
+                    record["phase"] = failure_phase
+                    raise call_error
+                record["phase"] = "validating_clocks"
                 prefix = _clock_prefix(record["clock_buffer"], self._last_clock)
-                params = self.ami_params_out
                 record["valid_clocks"] = tuple(prefix)
-            except Exception as err:
-                self._epoch_failed = True
-                record.update(error=str(err), error_type=type(err).__name__)
-                raise AMIModelError(str(err), record) from err
-            if prefix:
-                self._last_clock = prefix[-1]
-            wave_out.extend(record["wave"])
-            clock_times.extend(prefix)
-            params_out.append(params)
-            idx += len(_wave)
+                record["phase"] = "decoding_parameters"
+                raw = record["params_raw"]
+                params = raw.decode() if raw else f"({self.root_name} )"
+                record["phase"] = "assembling_result"
+                if prefix:
+                    self._last_clock = prefix[-1]
+                wave_out.extend(record["wave"])
+                clock_times.extend(prefix)
+                params_out.append(params)
+                idx += len(_wave)
+                record.update(phase="complete", completed_samples=idx)
 
-        return np.array(wave_out), np.array(clock_times), params_out
+            record["phase"] = "assembling_result"
+            result = np.array(wave_out), np.array(clock_times), params_out
+            record["phase"] = "complete"
+            return result
+        except BaseException as err:
+            phase = record["phase"]
+            # This flag means unsafe continuation, not proof that the model's internal state is invalid.
+            self._epoch_failed = idx > 0 or phase != "preparing" or not isinstance(err, Exception)
+            kind = {"preparing": "host_pre_call", "calling": "native_call_unknown",
+                    "checking_status": "model_execution", "validating_clocks": "clock_interface"}.get(
+                        phase, "host_post_return")
+            record.update(error=str(err), error_type=type(err).__name__,
+                          failure_kind=kind if isinstance(err, Exception) else "cancelled",
+                          continuation="blocked" if self._epoch_failed else "ready")
+            if not self._last_getwave_calls:
+                self._last_getwave_calls.append(record)
+            if isinstance(err, Exception):
+                raise AMIModelError(str(err), record) from err
+            raise
 
     @property
     def last_getwave_calls(self) -> tuple[dict[str, Any], ...]:

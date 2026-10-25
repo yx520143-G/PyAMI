@@ -87,6 +87,95 @@ def initializer():
     return result
 
 
+@pytest.mark.parametrize("block,phase,kind", [
+    ({"clocks": [-1.], "status": 0}, "checking_status", "model_execution"),
+    ({"clocks": []}, "validating_clocks", "clock_interface"),
+    ({"clocks": [-1.], "params": b"\xff"}, "decoding_parameters", "host_post_return"),
+    ({"clocks": [-1.], "error": OSError("boundary")}, "calling", "native_call_unknown"),
+])
+def test_failure_phase_does_not_conflate_host_decode_with_model_status(fake, block, phase, kind):
+    fake.blocks = [block]
+    with pytest.raises(model.AMIModelError) as caught:
+        fake.dut.getWave(np.array([1., 2.]))
+    record = caught.value.diagnostic
+    assert record["phase"] == phase and record["failure_kind"] == kind
+    assert record["wave"] == (1., 2.)
+    assert record["returned"] is ("error" not in block)
+    assert record["continuation"] == "blocked"
+    with pytest.raises(model.AMIModelError):
+        fake.dut.getWave(np.array([1., 2.]))
+    assert len(fake.seen) == 1
+
+
+@pytest.mark.parametrize("after_chunk", [False, True])
+def test_pre_call_host_failure_tracks_whether_this_python_call_already_consumed_input(fake, after_chunk):
+    fake.blocks = [{"clocks": [-1.]}]
+    data = [1., 2., "bad"] if after_chunk else ["bad"]
+    with pytest.raises(model.AMIModelError) as caught:
+        fake.dut.getWave(data, bits_per_call=1)
+    record = caught.value.diagnostic
+    assert record["phase"] == "preparing" and record["failure_kind"] == "host_pre_call"
+    assert record["c_call"] is None and record["returned"] is False
+    assert record["completed_samples"] == (2 if after_chunk else 0)
+    assert len(fake.seen) == int(after_chunk)
+    if after_chunk:
+        with pytest.raises(model.AMIModelError):
+            fake.dut.getWave([3.])
+    else:
+        assert record["continuation"] == "ready"
+        assert fake.dut.getWave([3.])[0].tolist() == [3.]
+
+
+def test_cancel_during_native_call_is_retained_and_never_retried(fake):
+    fake.blocks = [{"clocks": [-1.], "error": KeyboardInterrupt()}]
+    with pytest.raises(KeyboardInterrupt):
+        fake.dut.getWave([1., 2.])
+    record = fake.dut.last_getwave_calls[-1]
+    assert record["phase"] == "calling" and record["failure_kind"] == "cancelled"
+    assert record["wave"] == (1., 2.) and record["continuation"] == "blocked"
+    with pytest.raises(model.AMIModelError):
+        fake.dut.getWave([1., 2.])
+    assert len(fake.seen) == 1
+
+
+@pytest.mark.parametrize("native_error", [None, OSError("native call failed"), 0])
+def test_failed_auxiliary_capture_keeps_wave_and_primary_failure(fake, native_error):
+    class UnreadableParameters:
+        @property
+        def value(self):
+            raise ValueError("host parameter capture failed")
+
+    original = fake.dut._amiGetWave
+    fake.blocks = [{"clocks": [-1.], "offset": 4.}]
+
+    def invoke(*args):
+        result = original(*args)
+        fake.dut._ami_params_out = UnreadableParameters()
+        if isinstance(native_error, Exception):
+            raise native_error
+        return native_error if native_error == 0 else result
+
+    fake.dut._amiGetWave = invoke
+    with pytest.raises(model.AMIModelError) as caught:
+        fake.dut.getWave([1., 2.])
+    record = caught.value.diagnostic
+    assert record["wave"] == (5., 6.) and record["clock_buffer"][0] == -1.
+    assert "params_raw" not in record
+    assert record["continuation"] == "blocked"
+    if isinstance(native_error, Exception):
+        assert caught.value.__cause__ is native_error
+        assert record["failure_kind"] == "native_call_unknown"
+        assert record["capture_error"] == "host parameter capture failed"
+    elif native_error == 0:
+        assert record["status"] == 0 and record["returned"] is True
+        assert record["failure_kind"] == "model_execution"
+        assert record["capture_error"] == "host parameter capture failed"
+    else:
+        assert record["status"] == 1 and record["returned"] is True
+        assert record["phase"] == "capturing_outputs"
+        assert record["failure_kind"] == "host_post_return"
+
+
 @pytest.fixture
 def fake():
     boundary = FakeAMI()
